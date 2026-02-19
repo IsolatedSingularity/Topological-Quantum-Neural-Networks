@@ -16,6 +16,15 @@ import seaborn as sns
 from matplotlib.animation import FuncAnimation
 from tqnn_helpers import TQNNPerceptron, add_topological_defect
 
+# --- Dark Theme Constants ---
+DARK_BG = '#1a1a1a'
+DARK_AXES = '#0a0a0a'
+DARK_TEXT = '#ffffff'
+DARK_ACCENT = '#00ff88'
+DARK_GRID = '#2d2d2d'
+DARK_EDGE = '#444444'
+DARK_SUBTITLE = '#aaaaaa'
+
 def create_simple_patterns(size=10):
     """
     Creates a set of simple geometric patterns for classification.
@@ -63,8 +72,9 @@ def plot_degradation(results, target_label, plot_path):
     # Use the specified color palette
     palette = sns.color_palette("mako", n_colors=len(results[0.0]))
     
-    plt.style.use('seaborn-v0_8-whitegrid')
-    fig, ax = plt.subplots(figsize=(12, 7))
+    sns.set_style("darkgrid")
+    fig, ax = plt.subplots(figsize=(12, 7), facecolor=DARK_BG)
+    ax.set_facecolor(DARK_AXES)
     
     # Plot log probability for each class across noise levels
     for i, label in enumerate(results[0.0].keys()):
@@ -78,16 +88,19 @@ def plot_degradation(results, target_label, plot_path):
             color=palette[i]
         )
         
-    ax.set_title(f'TQNN Classification Confidence Degradation\n(Correct Class: "{target_label}")', fontsize=16)
-    ax.set_xlabel("Noise Level (Fraction of Flipped Pixels)", fontsize=12)
-    ax.set_ylabel("Log Probability (Confidence)", fontsize=12)
-    ax.legend(title="Class Prototypes", fontsize=10)
-    ax.grid(True, which='both', linestyle='-', linewidth=0.5)
+    ax.set_title(f'TQNN Classification Confidence Degradation\n(Correct Class: "{target_label}")',
+                 fontsize=16, color=DARK_TEXT)
+    ax.set_xlabel("Noise Level (Fraction of Flipped Pixels)", fontsize=12, color=DARK_TEXT)
+    ax.set_ylabel("Log Probability (Confidence)", fontsize=12, color=DARK_TEXT)
+    ax.legend(title="Class Prototypes", fontsize=10,
+              facecolor=DARK_BG, edgecolor=DARK_EDGE, labelcolor=DARK_TEXT)
+    ax.grid(True, which='both', linestyle='-', linewidth=0.5, color=DARK_GRID)
+    ax.tick_params(colors=DARK_TEXT)
     
     # Ensure the Plots directory exists
     os.makedirs(os.path.dirname(plot_path), exist_ok=True)
     
-    plt.savefig(plot_path, dpi=300, bbox_inches='tight')
+    plt.savefig(plot_path, dpi=300, bbox_inches='tight', facecolor=DARK_BG)
     plt.close()
     print("Plot generated successfully.")
 
@@ -123,9 +136,11 @@ def animate_robustness_test(tqnn, test_pattern, test_label, noise_levels, animat
     """
     print(f"Generating animation and saving to {animation_path}...")
     
-    fig = plt.figure(figsize=(16, 7))
+    fig = plt.figure(figsize=(16, 7), facecolor=DARK_BG)
     ax1 = fig.add_subplot(1, 2, 1)
+    ax1.set_facecolor(DARK_AXES)
     ax2 = fig.add_subplot(1, 2, 2, polar=True) # Use a polar projection for the radial plot
+    ax2.set_facecolor(DARK_AXES)
 
     palette = sns.color_palette("mako", n_colors=len(tqnn.class_labels))
     class_labels = tqnn.class_labels
@@ -151,8 +166,10 @@ def animate_robustness_test(tqnn, test_pattern, test_label, noise_levels, animat
         
         # --- Left Subplot: Noisy Pattern ---
         ax1.clear()
-        ax1.imshow(add_topological_defect(test_pattern, noise), cmap='gray_r', interpolation='nearest')
-        ax1.set_title(f"Input Pattern with Noise: {noise:.2f}\nPredicted: {pred_label}", fontsize=14)
+        ax1.set_facecolor(DARK_AXES)
+        ax1.imshow(add_topological_defect(test_pattern, noise), cmap='mako', interpolation='nearest')
+        ax1.set_title(f"Input Pattern with Noise: {noise:.2f}\nPredicted: {pred_label}",
+                      fontsize=14, color=DARK_TEXT)
         ax1.set_xticks([])
         ax1.set_yticks([])
 
@@ -177,11 +194,15 @@ def animate_robustness_test(tqnn, test_pattern, test_label, noise_levels, animat
         ax2.fill(angles, plot_values, color=palette[2], alpha=0.4, zorder=10)
 
         # Configure the plot aesthetics
+        ax2.set_facecolor(DARK_AXES)
         ax2.set_thetagrids(np.degrees(angles[:-1]), class_labels)
-        ax2.set_title("TQNN Classification Confidence", fontsize=14, y=1.1)
+        ax2.set_title("TQNN Classification Confidence", fontsize=14, y=1.1, color=DARK_TEXT)
         ax2.set_rlabel_position(22.5)
         ax2.set_rlim(0, 1)
         ax2.set_yticklabels([]) # Hide radial tick labels
+        ax2.tick_params(colors=DARK_TEXT)
+        for label in ax2.get_xticklabels():
+            label.set_color(DARK_TEXT)
             
         fig.tight_layout()
 
@@ -189,7 +210,8 @@ def animate_robustness_test(tqnn, test_pattern, test_label, noise_levels, animat
     anim = FuncAnimation(fig, update, frames=len(noise_levels), interval=150, repeat_delay=1000)
     # Ensure the Plots directory exists
     os.makedirs(os.path.dirname(animation_path), exist_ok=True)
-    anim.save(animation_path, writer='pillow', fps=5)
+    anim.save(animation_path, writer='pillow', fps=5,
+              savefig_kwargs={'facecolor': DARK_BG})
     plt.close()
     
     print("Animation generated successfully.")

@@ -2,7 +2,15 @@
 
 Interactive tools for topological quantum neural networks: real-time tensor network simulation, pattern classification with noise robustness, and 3D Tanner graph visualization.
 
+<p align="center">
+  <img src="./Plots/beta.gif?raw=true" alt="beta" width="34" height="34" />
+</p>
+
 ![Real-Time Tensor Network Simulator](Plots/tqnn_overall.png)
+
+## Overview
+
+This project implements Topological Quantum Neural Networks (TQNNs), a machine learning framework where classical deep neural networks emerge as the semi-classical limit of a topological quantum field theory. Instead of training weights through gradient descent, TQNNs encode data into spin-networks and classify patterns by evaluating TQFT transition amplitudes, providing inherent noise robustness through topological protection. The repository includes interactive simulators, visualization tools, and a robustness testing sandbox, all built in Python.
 
 ## Quick Start
 
@@ -233,6 +241,17 @@ $$j_1 \otimes j_2 = \bigoplus_{j_3=|j_1-j_2|}^{j_1+j_2} j_3$$
 
 > [!NOTE]
 > This implementation simulates topological quantum behavior on classical hardware. While it demonstrates the principles of topological robustness, it does not provide the computational advantages of a true quantum computer.
+
+## Contributing
+
+Contributions are welcome. To get started:
+
+1. Fork the repository and create a feature branch
+2. Install dependencies: `pip install -r requirements.txt`
+3. Run the test suite: `pytest tests/`
+4. Submit a pull request with a clear description of changes
+
+Please follow the existing code style: use `seaborn` mako/cubehelix palettes for visualizations, include docstrings for public functions, and add type hints to function signatures.
 
 ## References
 

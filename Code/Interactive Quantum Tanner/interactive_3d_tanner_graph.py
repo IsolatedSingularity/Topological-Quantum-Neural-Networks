@@ -41,6 +41,15 @@ seqCmap = sns.color_palette("mako", as_cmap=True)
 divCmap = sns.cubehelix_palette(start=.5, rot=-.5, as_cmap=True)
 altCmap = sns.cubehelix_palette(start=2, rot=0, dark=0, light=.95, reverse=True, as_cmap=True)
 
+# --- Dark Theme Constants ---
+DARK_BG = '#1a1a1a'
+DARK_AXES = '#0a0a0a'
+DARK_TEXT = '#ffffff'
+DARK_ACCENT = '#00ff88'
+DARK_GRID = '#2d2d2d'
+DARK_EDGE = '#444444'
+DARK_SUBTITLE = '#aaaaaa'
+
 # --- Simulation Parameters ---
 ANIMATION_INTERVAL = 100  # Milliseconds between frames
 DEFAULT_GENUS = 1
@@ -317,9 +326,9 @@ class TannerGraph3DVisualization:
         
     def setup_figure(self):
         """Setup the main figure and 3D plot"""
-        self.fig = plt.figure(figsize=(16, 12))
+        self.fig = plt.figure(figsize=(16, 12), facecolor=DARK_BG)
         self.fig.suptitle("Interactive 3D Topological Tanner Graph for QLDPC Codes", 
-                         fontsize=16, fontweight='bold')
+                         fontsize=16, fontweight='bold', color=DARK_TEXT)
         
         # Create layout with 3D plot and control panels
         gs = self.fig.add_gridspec(3, 3, height_ratios=[2.5, 1, 0.8], 
@@ -328,23 +337,33 @@ class TannerGraph3DVisualization:
         
         # Main 3D visualization
         self.ax_3d = self.fig.add_subplot(gs[0, :2], projection='3d')
-        self.ax_3d.set_title("3D Topological Tanner Graph", fontsize=14, fontweight='bold')
+        self.ax_3d.set_facecolor(DARK_AXES)
+        self.ax_3d.set_title("3D Topological Tanner Graph", fontsize=14, fontweight='bold',
+                             color=DARK_TEXT)
         
         # Performance metrics
         self.ax_metrics = self.fig.add_subplot(gs[0, 2])
-        self.ax_metrics.set_title("Performance Metrics", fontsize=12, fontweight='bold')
+        self.ax_metrics.set_facecolor(DARK_AXES)
+        self.ax_metrics.set_title("Performance Metrics", fontsize=12, fontweight='bold',
+                                  color=DARK_TEXT)
         
         # Topological properties
         self.ax_topology = self.fig.add_subplot(gs[1, :2])
-        self.ax_topology.set_title("Topological Properties Evolution", fontsize=12, fontweight='bold')
+        self.ax_topology.set_facecolor(DARK_AXES)
+        self.ax_topology.set_title("Topological Properties Evolution", fontsize=12,
+                                   fontweight='bold', color=DARK_TEXT)
         
         # Network analysis
         self.ax_network = self.fig.add_subplot(gs[1, 2])
-        self.ax_network.set_title("Network Analysis", fontsize=12, fontweight='bold')
+        self.ax_network.set_facecolor(DARK_AXES)
+        self.ax_network.set_title("Network Analysis", fontsize=12, fontweight='bold',
+                                  color=DARK_TEXT)
         
         # Controls
         self.ax_controls = self.fig.add_subplot(gs[2, :])
-        self.ax_controls.set_title("Interactive Controls", fontsize=12, fontweight='bold')
+        self.ax_controls.set_facecolor(DARK_BG)
+        self.ax_controls.set_title("Interactive Controls", fontsize=12, fontweight='bold',
+                                   color=DARK_TEXT)
         self.ax_controls.axis('off')
         
     def setup_controls(self):
@@ -532,8 +551,8 @@ class TannerGraph3DVisualization:
                     f"χ = {self.tanner_graph.euler_characteristic} | "
                     f"Distance ≤ {self.tanner_graph.distance_bounds}")
         self.ax_3d.text2D(0.02, 0.98, info_text, transform=self.ax_3d.transAxes,
-                        fontsize=10, verticalalignment='top',
-                        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+                        fontsize=10, verticalalignment='top', color=DARK_TEXT,
+                        bbox=dict(boxstyle='round', facecolor=DARK_BG, edgecolor=DARK_EDGE, alpha=0.9))
         
     def draw_metrics(self):
         """Draw performance metrics"""
@@ -656,7 +675,8 @@ class TannerGraph3DVisualization:
             self.ax_network.text(0.98, 0.95, f'Avg: {avg_degree:.1f}\nMax: {max_degree}', 
                                transform=self.ax_network.transAxes,
                                fontsize=9, verticalalignment='top', horizontalalignment='right',
-                               bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+                               color=DARK_TEXT,
+                               bbox=dict(boxstyle='round', facecolor=DARK_BG, edgecolor=DARK_EDGE, alpha=0.9))
         else:
             self.ax_network.text(0.5, 0.5, "Network Analysis", 
                                ha='center', va='center', transform=self.ax_network.transAxes)
@@ -664,6 +684,7 @@ class TannerGraph3DVisualization:
     def draw_controls_info(self):
         """Draw control information"""
         self.ax_controls.clear()
+        self.ax_controls.set_facecolor(DARK_BG)
         self.ax_controls.axis('off')
         
         # Current state
@@ -674,7 +695,9 @@ class TannerGraph3DVisualization:
         
         self.ax_controls.text(0.5, 0.7, state_text, ha='center', va='center',
                             transform=self.ax_controls.transAxes, fontsize=11,
-                            bbox=dict(boxstyle='round', facecolor=altCmap(0.05), alpha=0.6))
+                            color=DARK_TEXT,
+                            bbox=dict(boxstyle='round', facecolor=DARK_BG,
+                                      edgecolor=DARK_EDGE, alpha=0.9))
         
         # Instructions
         instructions = (
@@ -686,7 +709,7 @@ class TannerGraph3DVisualization:
         
         self.ax_controls.text(0.5, 0.3, instructions, ha='center', va='center',
                             transform=self.ax_controls.transAxes, fontsize=10,
-                            style='italic', color='darkblue')
+                            style='italic', color=DARK_SUBTITLE)
     
     def toggle_display_options(self, label):
         """Toggle display options based on checkbox"""

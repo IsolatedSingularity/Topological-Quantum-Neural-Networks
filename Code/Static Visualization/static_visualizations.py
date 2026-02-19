@@ -10,6 +10,8 @@ The visualizations include:
 3.  A logical gate structure with symmetry-protected nodes.
 """
 
+from __future__ import annotations
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -23,6 +25,15 @@ seqCmap = sns.color_palette("mako", as_cmap=True)
 divCmap = sns.cubehelix_palette(start=.5, rot=-.5, as_cmap=True)
 altCmap = sns.cubehelix_palette(start=2, rot=0, dark=0, light=.95, reverse=True, as_cmap=True)
 
+# Dark theme constants (matching tensor network simulator)
+DARK_BG = '#1a1a1a'
+DARK_AXES = '#0a0a0a'
+DARK_TEXT = '#ffffff'
+DARK_ACCENT = '#00ff88'
+DARK_GRID = '#2d2d2d'
+DARK_EDGE = '#444444'
+DARK_SUBTITLE = '#aaaaaa'
+
 # Create the output directory for plots if it doesn't exist
 # Assumes this script is in the 'Code/' directory
 plots_dir = 'Plots'
@@ -32,7 +43,7 @@ if not os.path.exists(plots_dir):
 
 # --- Visualization Functions ---
 
-def plot_braiding_pattern(save_path):
+def plot_braiding_pattern(save_path: str) -> None:
     """
     Illustrates a simple braiding pattern of three anyonic world-lines,
     representing a fundamental topological operation in a TQNN. The braiding
@@ -43,7 +54,8 @@ def plot_braiding_pattern(save_path):
     # Define the sequence of crossings: ((over, under), y_position)
     crossings = [((0, 1), 0.25), ((1, 2), 0.75)]
 
-    fig, ax = plt.subplots(figsize=(6, 8))
+    fig, ax = plt.subplots(figsize=(6, 8), facecolor=DARK_BG)
+    ax.set_facecolor(DARK_AXES)
 
     y_coords = np.array([0] + [c[1] for c in crossings] + [1])
     strand_pos = np.arange(n_strands)
@@ -89,15 +101,15 @@ def plot_braiding_pattern(save_path):
         cross_idx_over = np.argmin(np.abs(over_path[:, 1] - y_pos))
         segment = over_path[max(0, cross_idx_over - 6):min(len(over_path), cross_idx_over + 6)]
         
-        # Draw a white background to create the illusion of a break
-        ax.plot(segment[:, 0], segment[:, 1], color='white', linewidth=16, solid_capstyle='round', zorder=5)
+        # Draw a dark background to create the illusion of a break
+        ax.plot(segment[:, 0], segment[:, 1], color=DARK_AXES, linewidth=16, solid_capstyle='round', zorder=5)
         # Redraw the over-strand segment on top
         ax.plot(segment[:, 0], segment[:, 1], color=colors[s_over], linewidth=8, solid_capstyle='round', zorder=6)
 
     # Final styling for a publication-quality figure
-    ax.set_title(r'Topological Braiding of Anyonic World-Lines', fontsize=18, pad=20)
-    ax.set_xlabel('Spatial Dimension', fontsize=14)
-    ax.set_ylabel(r'Time-like Evolution ($\tau$)', fontsize=14)
+    ax.set_title(r'Topological Braiding of Anyonic World-Lines', fontsize=18, pad=20, color=DARK_TEXT)
+    ax.set_xlabel('Spatial Dimension', fontsize=14, color=DARK_SUBTITLE)
+    ax.set_ylabel(r'Time-like Evolution ($\tau$)', fontsize=14, color=DARK_SUBTITLE)
     ax.set_xticks([])
     ax.set_yticks([])
     ax.set_ylim(-0.1, 1.1)
@@ -107,17 +119,17 @@ def plot_braiding_pattern(save_path):
     initial_positions = np.linspace(-1, 1, n_strands)
     final_permutation = strand_pos
     for i in range(n_strands):
-        ax.text(initial_positions[i], -0.08, fr'Input $|q_{i}\rangle$', ha='center', fontsize=12)
+        ax.text(initial_positions[i], -0.08, fr'Input $|q_{i}\rangle$', ha='center', fontsize=12, color=DARK_TEXT)
         final_x = paths[i][-1, 0]
-        ax.text(final_x, 1.08, fr'Output $|q_{{{final_permutation[i]}}}\rangle$', ha='center', fontsize=12)
+        ax.text(final_x, 1.08, fr'Output $|q_{{{final_permutation[i]}}}\rangle$', ha='center', fontsize=12, color=DARK_TEXT)
 
     fig.tight_layout()
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor=DARK_BG)
     plt.close()
     print(f"Saved braiding pattern visualization to {save_path}")
 
 
-def plot_large_braiding_pattern(save_path):
+def plot_large_braiding_pattern(save_path: str) -> None:
     """
     Illustrates a more complex braiding pattern with 6 anyonic world-lines,
     showcasing a longer time evolution and more intricate topological operations.
@@ -132,7 +144,8 @@ def plot_large_braiding_pattern(save_path):
         ((1, 2), 0.9)
     ]
 
-    fig, ax = plt.subplots(figsize=(10, 12))
+    fig, ax = plt.subplots(figsize=(10, 12), facecolor=DARK_BG)
+    ax.set_facecolor(DARK_AXES)
 
     y_coords = np.array([0] + [c[1] for c in crossings] + [1])
     strand_pos = np.arange(n_strands)
@@ -173,12 +186,12 @@ def plot_large_braiding_pattern(save_path):
         cross_idx_over = np.argmin(np.abs(over_path[:, 1] - y_pos))
         segment = over_path[max(0, cross_idx_over - 6):min(len(over_path), cross_idx_over + 6)]
         
-        ax.plot(segment[:, 0], segment[:, 1], color='white', linewidth=16, solid_capstyle='round', zorder=5)
+        ax.plot(segment[:, 0], segment[:, 1], color=DARK_AXES, linewidth=16, solid_capstyle='round', zorder=5)
         ax.plot(segment[:, 0], segment[:, 1], color=colors[s_over], linewidth=8, solid_capstyle='round', zorder=6)
 
-    ax.set_title(r'Large Topological Braiding of 6 Anyonic World-Lines', fontsize=18, pad=20)
-    ax.set_xlabel('Spatial Dimension', fontsize=14)
-    ax.set_ylabel(r'Time-like Evolution ($\tau$)', fontsize=14)
+    ax.set_title(r'Large Topological Braiding of 6 Anyonic World-Lines', fontsize=18, pad=20, color=DARK_TEXT)
+    ax.set_xlabel('Spatial Dimension', fontsize=14, color=DARK_SUBTITLE)
+    ax.set_ylabel(r'Time-like Evolution ($\tau$)', fontsize=14, color=DARK_SUBTITLE)
     ax.set_xticks([])
     ax.set_yticks([])
     ax.set_ylim(-0.1, 1.1)
@@ -187,17 +200,17 @@ def plot_large_braiding_pattern(save_path):
     initial_positions = np.linspace(-1.5, 1.5, n_strands)
     final_permutation = strand_pos
     for i in range(n_strands):
-        ax.text(initial_positions[i], -0.05, fr'$|q_{i}\rangle$', ha='center', fontsize=12)
+        ax.text(initial_positions[i], -0.05, fr'$|q_{i}\rangle$', ha='center', fontsize=12, color=DARK_TEXT)
         final_x = paths[i][-1, 0]
-        ax.text(final_x, 1.05, fr'$|q_{{{final_permutation[i]}}}\rangle$', ha='center', fontsize=12)
+        ax.text(final_x, 1.05, fr'$|q_{{{final_permutation[i]}}}\rangle$', ha='center', fontsize=12, color=DARK_TEXT)
 
     fig.tight_layout()
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor=DARK_BG)
     plt.close()
     print(f"Saved large braiding pattern visualization to {save_path}")
 
 
-def plot_topological_charge_flow(save_path):
+def plot_topological_charge_flow(save_path: str) -> None:
     """
     Illustrates the flow and conservation of topological charge through a
     network, a key concept in TQNNs for preserving information robustly.
@@ -224,34 +237,35 @@ def plot_topological_charge_flow(save_path):
     charges = nx.get_node_attributes(G, 'charge')
     node_colors = [charges[n] for n in G.nodes()]
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(12, 8), facecolor=DARK_BG)
+    ax.set_facecolor(DARK_AXES)
 
     # Draw nodes, colored by charge using the diverging colormap
     nodes = nx.draw_networkx_nodes(G, pos, node_color=node_colors, cmap=divCmap,
                                    node_size=3000, alpha=0.9, vmin=-1.5, vmax=1.5, ax=ax)
-    nodes.set_edgecolor('black')
+    nodes.set_edgecolor(DARK_EDGE)
 
     # Draw edges with arrows
     nx.draw_networkx_edges(G, pos, arrowstyle='->', arrowsize=25,
-                           edge_color='gray', width=2.0, ax=ax, node_size=3000)
+                           edge_color='#666666', width=2.0, ax=ax, node_size=3000)
 
     # Add charge value labels to nodes
     labels = {n: (f"${charges[n]:+.1f}" if 'label' not in G.nodes[n] else G.nodes[n]['label']) for n in G.nodes()}
     nx.draw_networkx_labels(G, pos, labels=labels, font_size=12, font_color='white', font_weight='bold')
 
     # Final styling
-    ax.set_title('Conservation of Topological Charge in a TQNN', fontsize=18, pad=20)
+    ax.set_title('Conservation of Topological Charge in a TQNN', fontsize=18, pad=20, color=DARK_TEXT)
     ax.text(0.5, 0.05,
             'Charge is conserved at each interaction vertex, protecting information from local errors.',
-            transform=fig.transFigure, ha='center', fontsize=12, style='italic')
+            transform=fig.transFigure, ha='center', fontsize=12, style='italic', color=DARK_SUBTITLE)
     plt.tight_layout(rect=[0, 0.1, 1, 0.95])
     plt.axis('off')
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor=DARK_BG)
     plt.close()
     print(f"Saved topological charge flow visualization to {save_path}")
 
 
-def plot_large_topological_charge_flow(save_path):
+def plot_large_topological_charge_flow(save_path: str) -> None:
     """
     Illustrates charge conservation in a larger, more complex TQNN,
     with multiple input and output layers and intermediate processing nodes.
@@ -294,27 +308,28 @@ def plot_large_topological_charge_flow(save_path):
     charges = nx.get_node_attributes(G, 'charge')
     node_colors = [charges[n] for n in G.nodes()]
 
-    fig, ax = plt.subplots(figsize=(14, 10))
+    fig, ax = plt.subplots(figsize=(14, 10), facecolor=DARK_BG)
+    ax.set_facecolor(DARK_AXES)
     nodes = nx.draw_networkx_nodes(G, pos, node_color=node_colors, cmap=divCmap,
                                    node_size=3500, alpha=0.9, vmin=-1.5, vmax=1.5, ax=ax)
-    nodes.set_edgecolor('black')
+    nodes.set_edgecolor(DARK_EDGE)
     nx.draw_networkx_edges(G, pos, arrowstyle='->', arrowsize=25,
-                           edge_color='gray', width=2.0, ax=ax, node_size=3500)
+                           edge_color='#666666', width=2.0, ax=ax, node_size=3500)
     labels = {n: (f"${charges[n]:+.1f}" if 'label' not in G.nodes[n] else G.nodes[n]['label']) for n in G.nodes()}
     nx.draw_networkx_labels(G, pos, labels=labels, font_size=12, font_color='white', font_weight='bold')
 
-    ax.set_title('Conservation of Topological Charge in a Large TQNN', fontsize=18, pad=20)
+    ax.set_title('Conservation of Topological Charge in a Large TQNN', fontsize=18, pad=20, color=DARK_TEXT)
     ax.text(0.5, 0.05,
             'Information is robustly preserved as charge is conserved through multiple network layers.',
-            transform=fig.transFigure, ha='center', fontsize=12, style='italic')
+            transform=fig.transFigure, ha='center', fontsize=12, style='italic', color=DARK_SUBTITLE)
     plt.tight_layout(rect=[0, 0.1, 1, 0.95])
     plt.axis('off')
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor=DARK_BG)
     plt.close()
     print(f"Saved large topological charge flow visualization to {save_path}")
 
 
-def plot_logical_gate_structure(save_path):
+def plot_logical_gate_structure(save_path: str) -> None:
     """
     Depicts the structure of a logical gate (e.g., CNOT) with
     symmetry-protected nodes, which are immune to certain errors.
@@ -346,7 +361,8 @@ def plot_logical_gate_structure(save_path):
         else:
             node_styles[node] = {'shape': 'o', 'color': seqCmap(0.2), 'size': 3000}
 
-    fig, ax = plt.subplots(figsize=(10, 6))
+    fig, ax = plt.subplots(figsize=(10, 6), facecolor=DARK_BG)
+    ax.set_facecolor(DARK_AXES)
 
     # Draw nodes with their specified shapes and colors
     for shape in set(s['shape'] for s in node_styles.values()):
@@ -354,25 +370,25 @@ def plot_logical_gate_structure(save_path):
         nx.draw_networkx_nodes(G, pos, nodelist=nodelist, node_shape=shape,
                                node_color=[node_styles[n]['color'] for n in nodelist],
                                node_size=[node_styles[n]['size'] for n in nodelist],
-                               ax=ax, alpha=0.9, edgecolors='black')
+                               ax=ax, alpha=0.9, edgecolors=DARK_EDGE)
 
-    nx.draw_networkx_edges(G, pos, edge_color='gray', width=2.0, ax=ax)
-    nx.draw_networkx_labels(G, pos, labels=labels, font_size=14, font_color='black')
+    nx.draw_networkx_edges(G, pos, edge_color='#666666', width=2.0, ax=ax)
+    nx.draw_networkx_labels(G, pos, labels=labels, font_size=14, font_color=DARK_TEXT)
 
     # Final styling
-    ax.set_title('TQNN Logical Gate with Symmetry-Protected Nodes', fontsize=18, pad=20)
+    ax.set_title('TQNN Logical Gate with Symmetry-Protected Nodes', fontsize=18, pad=20, color=DARK_TEXT)
     ax.text(0.5, 0.05,
         r'Symmetry-protected nodes (hexagons) are immune to certain classes of errors.',
-        transform=fig.transFigure, ha='center', fontsize=12, style='italic')
+        transform=fig.transFigure, ha='center', fontsize=12, style='italic', color=DARK_SUBTITLE)
 
     plt.axis('off')
     plt.tight_layout(rect=[0, 0.1, 1, 0.95])
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor=DARK_BG)
     plt.close()
     print(f"Saved logical gate structure visualization to {save_path}")
 
 
-def plot_large_logical_gate_structure(save_path):
+def plot_large_logical_gate_structure(save_path: str) -> None:
     """
     Depicts a larger logical circuit, such as a Toffoli gate, with multiple
     control qubits and symmetry-protected nodes, including a clear legend.
@@ -411,34 +427,36 @@ def plot_large_logical_gate_structure(save_path):
         else:
             node_styles[node] = {'shape': 'o', 'color': seqCmap(0.2), 'size': 4000, 'label': 'Standard Node'}
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(12, 8), facecolor=DARK_BG)
+    ax.set_facecolor(DARK_AXES)
 
     for shape in set(s['shape'] for s in node_styles.values()):
         nodelist = [n for n, s in node_styles.items() if s['shape'] == shape]
         nx.draw_networkx_nodes(G, pos, nodelist=nodelist, node_shape=shape,
                                node_color=[node_styles[n]['color'] for n in nodelist],
                                node_size=[node_styles[n]['size'] for n in nodelist],
-                               ax=ax, alpha=0.9, edgecolors='black')
+                               ax=ax, alpha=0.9, edgecolors=DARK_EDGE)
 
-    nx.draw_networkx_edges(G, pos, edge_color='gray', width=2.0, ax=ax)
-    nx.draw_networkx_labels(G, pos, labels=labels, font_size=14, font_color='black')
+    nx.draw_networkx_edges(G, pos, edge_color='#666666', width=2.0, ax=ax)
+    nx.draw_networkx_labels(G, pos, labels=labels, font_size=14, font_color=DARK_TEXT)
 
     # Create a custom legend that does not overlap
     legend_elements = [
         Line2D([0], [0], marker='H', color='w', label='Symmetry-Protected Node',
-               markerfacecolor=altCmap(0.8), markersize=15, markeredgecolor='black'),
+               markerfacecolor=altCmap(0.8), markersize=15, markeredgecolor=DARK_EDGE),
         Line2D([0], [0], marker='s', color='w', label='Gate Operation',
-               markerfacecolor=seqCmap(0.5), markersize=15, markeredgecolor='black'),
+               markerfacecolor=seqCmap(0.5), markersize=15, markeredgecolor=DARK_EDGE),
         Line2D([0], [0], marker='o', color='w', label='Standard Node',
-               markerfacecolor=seqCmap(0.2), markersize=15, markeredgecolor='black')
+               markerfacecolor=seqCmap(0.2), markersize=15, markeredgecolor=DARK_EDGE)
     ]
-    ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.05),
-              fancybox=True, shadow=True, ncol=3, fontsize=12)
+    legend = ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.05),
+              fancybox=True, shadow=True, ncol=3, fontsize=12,
+              facecolor=DARK_BG, edgecolor=DARK_EDGE, labelcolor=DARK_TEXT)
 
-    ax.set_title('TQNN Toffoli Gate with Symmetry-Protected Nodes', fontsize=18, pad=20)
+    ax.set_title('TQNN Toffoli Gate with Symmetry-Protected Nodes', fontsize=18, pad=20, color=DARK_TEXT)
     plt.axis('off')
     plt.tight_layout(rect=[0, 0.1, 1, 0.95])
-    plt.savefig(save_path, dpi=300, bbox_inches='tight')
+    plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor=DARK_BG)
     plt.close()
     print(f"Saved large logical gate structure visualization to {save_path}")
 

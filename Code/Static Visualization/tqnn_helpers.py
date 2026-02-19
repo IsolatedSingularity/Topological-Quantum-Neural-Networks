@@ -5,12 +5,14 @@ This module provides the core components for a Topological Quantum Neural Networ
 sandbox. It includes a simplified TQNN Perceptron classifier based on the
 semi-classical limit formulation described in the project's reference papers.
 """
+from __future__ import annotations
+
 import numpy as np
 
 # A large spin value for the semi-classical limit, as mentioned in the papers.
-N_LARGE = 1000
+N_LARGE: int = 1000
 
-def create_spin_network_from_pattern(pattern):
+def create_spin_network_from_pattern(pattern: np.ndarray) -> np.ndarray:
     """
     Encodes a 2D binary pattern into a vector of spin "colors".
 
@@ -29,7 +31,7 @@ def create_spin_network_from_pattern(pattern):
     # This simulates the j = N + floor(x_i) mapping from the papers
     return N_LARGE + flat_pattern * 10
 
-def add_topological_defect(pattern, noise_level):
+def add_topological_defect(pattern: np.ndarray, noise_level: float) -> np.ndarray:
     """
     Introduces noise into a pattern to simulate a topological defect.
 
@@ -65,12 +67,12 @@ class TQNNPerceptron:
     amplitude calculation to classify new patterns. It does not use gradient-based
     training.
     """
-    def __init__(self):
+    def __init__(self) -> None:
         """Initializes the TQNNPerceptron."""
-        self.prototypes = {}
-        self.class_labels = []
+        self.prototypes: dict[str, dict[str, np.ndarray]] = {}
+        self.class_labels: list[str] = []
 
-    def train(self, patterns, labels):
+    def train(self, patterns: list[np.ndarray], labels: list[str]) -> None:
         """
         Computes class prototypes from training data.
 
@@ -108,7 +110,7 @@ class TQNNPerceptron:
             }
         print("Prototypes computed successfully.")
 
-    def _calculate_log_probability(self, input_spins, proto_mean, proto_std):
+    def _calculate_log_probability(self, input_spins: np.ndarray, proto_mean: np.ndarray, proto_std: np.ndarray) -> float:
         """
         Calculates the log of the transition probability amplitude.
 
@@ -134,7 +136,7 @@ class TQNNPerceptron:
         
         return gaussian_term
 
-    def predict(self, pattern):
+    def predict(self, pattern: np.ndarray) -> tuple[str | None, dict[str, float]]:
         """
         Classifies a new pattern.
 

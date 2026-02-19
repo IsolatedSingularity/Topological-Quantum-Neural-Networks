@@ -9,6 +9,8 @@ The animations include:
 2.  Animated flow of topological charge through a network.
 """
 
+from __future__ import annotations
+
 import os
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,6 +26,15 @@ seqCmap = sns.color_palette("mako", as_cmap=True)
 divCmap = sns.cubehelix_palette(start=.5, rot=-.5, as_cmap=True)
 altCmap = sns.cubehelix_palette(start=2, rot=0, dark=0, light=.95, reverse=True, as_cmap=True)
 
+# Dark theme constants (matching tensor network simulator)
+DARK_BG = '#1a1a1a'
+DARK_AXES = '#0a0a0a'
+DARK_TEXT = '#ffffff'
+DARK_ACCENT = '#00ff88'
+DARK_GRID = '#2d2d2d'
+DARK_EDGE = '#444444'
+DARK_SUBTITLE = '#aaaaaa'
+
 # Define the output directory for plots
 plots_dir = 'Plots'
 if not os.path.exists(plots_dir):
@@ -32,7 +43,7 @@ if not os.path.exists(plots_dir):
 
 # --- Animation Functions ---
 
-def animate_braiding_pattern(save_path):
+def animate_braiding_pattern(save_path: str) -> None:
     """
     Creates an animation of the braiding of 6 anyonic world-lines over time.
     The animation shows the strands moving and crossing, highlighting the
@@ -47,10 +58,11 @@ def animate_braiding_pattern(save_path):
         ((1, 2), 0.9)
     ]
     
-    fig, ax = plt.subplots(figsize=(10, 12))
-    ax.set_title(r'Animated Topological Braiding (6 Anyons)', fontsize=18, pad=20)
-    ax.set_xlabel('Spatial Dimension', fontsize=14)
-    ax.set_ylabel(r'Time-like Evolution ($\tau$)', fontsize=14)
+    fig, ax = plt.subplots(figsize=(10, 12), facecolor=DARK_BG)
+    ax.set_facecolor(DARK_AXES)
+    ax.set_title(r'Animated Topological Braiding (6 Anyons)', fontsize=18, pad=20, color=DARK_TEXT)
+    ax.set_xlabel('Spatial Dimension', fontsize=14, color=DARK_SUBTITLE)
+    ax.set_ylabel(r'Time-like Evolution ($\tau$)', fontsize=14, color=DARK_SUBTITLE)
     ax.set_xticks([])
     ax.set_yticks([])
     ax.set_ylim(-0.2, 1.2)
@@ -89,12 +101,12 @@ def animate_braiding_pattern(save_path):
     final_permutation = strand_pos # This holds the final mapping
     for i in range(n_strands):
         # Initial state label
-        ax.text(initial_positions[i], -0.1, fr'$|q_{i}\rangle$', ha='center', fontsize=12)
+        ax.text(initial_positions[i], -0.1, fr'$|q_{i}\rangle$', ha='center', fontsize=12, color=DARK_TEXT)
         # Final state label, placed at the end x-coordinate of the strand
         final_x = full_paths[i][-1, 0]
         # Find which initial strand (j) ends up at this position
         final_logical_index = final_permutation[np.argmin(np.abs(current_pos - final_x))]
-        ax.text(final_x, 1.1, fr'$|q_{{{final_logical_index}}}\rangle$', ha='center', fontsize=12)
+        ax.text(final_x, 1.1, fr'$|q_{{{final_logical_index}}}\rangle$', ha='center', fontsize=12, color=DARK_TEXT)
 
     def init():
         for line in lines:
@@ -112,12 +124,12 @@ def animate_braiding_pattern(save_path):
 
     # Add 25 extra frames for the pause
     ani = animation.FuncAnimation(fig, update, frames=125, init_func=init, blit=True, interval=50)
-    ani.save(save_path, writer='pillow', fps=20)
+    ani.save(save_path, writer='pillow', fps=20, savefig_kwargs={'facecolor': DARK_BG})
     plt.close()
     print(f"Saved braiding animation to {save_path}")
 
 
-def animate_quantum_gate(save_path):
+def animate_quantum_gate(save_path: str) -> None:
     """
     Creates an animation showing the construction of a Toffoli (CCNOT) gate
     circuit, piece by piece, starting from a blank canvas.
@@ -173,10 +185,11 @@ def animate_quantum_gate(save_path):
 
     total_frames = len(stages) * 15 # 15 frames per stage
 
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(12, 8), facecolor=DARK_BG)
 
     def update(frame):
         ax.clear()
+        ax.set_facecolor(DARK_AXES)
         current_stage = min(frame // 15, len(stages) - 1)
         
         nodes_to_draw = stages[current_stage]
@@ -190,34 +203,35 @@ def animate_quantum_gate(save_path):
         if nodes_to_draw:
             nx.draw_networkx_nodes(G, pos, nodelist=nodes_to_draw, 
                                    node_color=colors_to_draw, node_size=4000, 
-                                   ax=ax, edgecolors='black')
-            nx.draw_networkx_labels(G, pos, labels=labels_to_draw, font_size=14, font_color='black')
+                                   ax=ax, edgecolors=DARK_EDGE)
+            nx.draw_networkx_labels(G, pos, labels=labels_to_draw, font_size=14, font_color=DARK_TEXT)
         
         if edges_to_draw:
-            nx.draw_networkx_edges(G, pos, edgelist=edges_to_draw, width=2.0, ax=ax, edge_color='gray')
+            nx.draw_networkx_edges(G, pos, edgelist=edges_to_draw, width=2.0, ax=ax, edge_color='#666666')
 
         # Add legend
         legend_elements = [
             Line2D([0], [0], marker='o', color='w', label='Input/Output Node',
-                   markerfacecolor=seqCmap(0.2), markersize=15, markeredgecolor='black'),
+                   markerfacecolor=seqCmap(0.2), markersize=15, markeredgecolor=DARK_EDGE),
             Line2D([0], [0], marker='o', color='w', label='Gate Operation',
-                   markerfacecolor=seqCmap(0.5), markersize=15, markeredgecolor='black')
+                   markerfacecolor=seqCmap(0.5), markersize=15, markeredgecolor=DARK_EDGE)
         ]
         ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.05),
-                  fancybox=True, shadow=True, ncol=2, fontsize=12)
+                  fancybox=True, shadow=True, ncol=2, fontsize=12,
+                  facecolor=DARK_BG, edgecolor=DARK_EDGE, labelcolor=DARK_TEXT)
 
-        ax.set_title('Animated TQNN Gate Construction (Toffoli)', fontsize=18, pad=20)
+        ax.set_title('Animated TQNN Gate Construction (Toffoli)', fontsize=18, pad=20, color=DARK_TEXT)
         ax.set_xlim(-1, 5)
         ax.set_ylim(-3, 3)
         plt.axis('off')
 
     ani = animation.FuncAnimation(fig, update, frames=total_frames, interval=50)
-    ani.save(save_path, writer='pillow', fps=20)
+    ani.save(save_path, writer='pillow', fps=20, savefig_kwargs={'facecolor': DARK_BG})
     plt.close()
     print(f"Saved quantum gate construction animation to {save_path}")
 
 
-def animate_complex_quantum_circuit(save_path):
+def animate_complex_quantum_circuit(save_path: str) -> None:
     """
     Animates the construction of a 3-qubit Quantum Fourier Transform (QFT)
     circuit, demonstrating a more complex topological structure.
@@ -254,17 +268,18 @@ def animate_complex_quantum_circuit(save_path):
     all_nodes = list(nodes_data.keys())
     pos = nx.get_node_attributes(G, 'pos')
     
-    fig, ax = plt.subplots(figsize=(14, 8))
+    fig, ax = plt.subplots(figsize=(14, 8), facecolor=DARK_BG)
 
     def update(frame):
         ax.clear()
+        ax.set_facecolor(DARK_AXES)
         
         num_nodes = len(all_nodes)
         nodes_to_draw_count = int((frame / 100) * num_nodes)
         nodes_to_draw = all_nodes[:nodes_to_draw_count]
         
         # Draw base wires first
-        nx.draw_networkx_edges(G, pos, edgelist=edges_data['wires'], width=1.5, edge_color='lightgray')
+        nx.draw_networkx_edges(G, pos, edgelist=edges_data['wires'], width=1.5, edge_color='#555555')
 
         # --- Efficiently draw nodes by shape to avoid warnings ---
         
@@ -276,7 +291,7 @@ def animate_complex_quantum_circuit(save_path):
             if 'type' in data:
                 if data['type'] == 'Hadamard': style.update({'node_color': altCmap(0.8), 'node_shape': 's'})
                 elif data['type'] == 'C-Phase': style.update({'node_color': seqCmap(0.5), 'node_shape': 's'})
-            elif 'dot' in node: style.update({'node_color': 'black', 'node_size': 100})
+            elif 'dot' in node: style.update({'node_color': DARK_TEXT, 'node_size': 100})
             styles_to_draw[node] = style
         
         # 2. Group nodes by shape
@@ -292,32 +307,33 @@ def animate_complex_quantum_circuit(save_path):
             colors = [styles_to_draw[n]['node_color'] for n in nodelist]
             sizes = [styles_to_draw[n]['node_size'] for n in nodelist]
             nx.draw_networkx_nodes(G, pos, nodelist=nodelist, node_shape=shape,
-                                   node_color=colors, node_size=sizes, edgecolors='black')
+                                   node_color=colors, node_size=sizes, edgecolors=DARK_EDGE)
 
         # Draw labels and control lines
         labels_to_draw = {n: G.nodes[n]['label'] for n in nodes_to_draw if 'label' in G.nodes[n]}
-        nx.draw_networkx_labels(G, pos, labels=labels_to_draw, font_size=14)
+        nx.draw_networkx_labels(G, pos, labels=labels_to_draw, font_size=14, font_color=DARK_TEXT)
         
         for u, v in edges_data['controls']:
             if u in nodes_to_draw and v in nodes_to_draw:
-                nx.draw_networkx_edges(G, pos, edgelist=[(u, v)], width=1.5, edge_color='black')
+                nx.draw_networkx_edges(G, pos, edgelist=[(u, v)], width=1.5, edge_color=DARK_TEXT)
         
         # Legend
         legend_elements = [
             Line2D([0], [0], marker='s', color='w', label='Hadamard Gate', markerfacecolor=altCmap(0.8), markersize=15),
             Line2D([0], [0], marker='s', color='w', label='Controlled-Phase Gate', markerfacecolor=seqCmap(0.5), markersize=15),
-            Line2D([0], [0], marker='o', color='w', label='Control Point', markerfacecolor='black', markersize=10),
+            Line2D([0], [0], marker='o', color='w', label='Control Point', markerfacecolor=DARK_TEXT, markersize=10),
         ]
-        ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=3, fontsize=12)
+        ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.05), fancybox=True, ncol=3, fontsize=12,
+                  facecolor=DARK_BG, edgecolor=DARK_EDGE, labelcolor=DARK_TEXT)
 
-        ax.set_title('Animated Construction of a 3-Qubit QFT Circuit', fontsize=18, pad=20)
+        ax.set_title('Animated Construction of a 3-Qubit QFT Circuit', fontsize=18, pad=20, color=DARK_TEXT)
         ax.set_xlim(-1, 7)
         ax.set_ylim(-3, 3)
         plt.axis('off')
         
     # Add 25 frames for pause at the end
     ani = animation.FuncAnimation(fig, update, frames=125, interval=60)
-    ani.save(save_path, writer='pillow', fps=25)
+    ani.save(save_path, writer='pillow', fps=25, savefig_kwargs={'facecolor': DARK_BG})
     plt.close()
     print(f"Saved complex circuit animation to {save_path}")
 

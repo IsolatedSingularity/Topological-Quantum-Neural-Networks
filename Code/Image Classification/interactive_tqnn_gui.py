@@ -38,6 +38,15 @@ seqCmap = sns.color_palette("mako", as_cmap=True)
 divCmap = sns.cubehelix_palette(start=.5, rot=-.5, as_cmap=True)
 altCmap = sns.cubehelix_palette(start=2, rot=0, dark=0, light=.95, reverse=True, as_cmap=True)
 
+# Dark theme constants (matching tensor network simulator)
+DARK_BG = '#1a1a1a'
+DARK_AXES = '#0a0a0a'
+DARK_TEXT = '#ffffff'
+DARK_ACCENT = '#00ff88'
+DARK_GRID = '#2d2d2d'
+DARK_EDGE = '#444444'
+DARK_SUBTITLE = '#aaaaaa'
+
 # --- Simulation Parameters ---
 ANIMATION_INTERVAL = 150  # Milliseconds between frames
 PATTERN_SIZE = 8  # Size of input patterns
@@ -177,9 +186,9 @@ class TQNNVisualization:
         
     def setup_figure(self):
         """Setup the main figure and subplots"""
-        self.fig = plt.figure(figsize=(18, 12))
+        self.fig = plt.figure(figsize=(18, 12), facecolor=DARK_BG)
         self.fig.suptitle("Interactive Topological Quantum Neural Network (TQNN)", 
-                         fontsize=16, fontweight='bold')
+                         fontsize=16, fontweight='bold', color=DARK_TEXT)
         
         # Create carefully spaced grid layout
         gs = self.fig.add_gridspec(3, 4, height_ratios=[1.5, 1.2, 0.6], 
@@ -188,27 +197,34 @@ class TQNNVisualization:
         
         # Top row - Main visualizations
         self.ax_pattern = self.fig.add_subplot(gs[0, 0])
-        self.ax_pattern.set_title("Input Pattern + Noise", fontsize=12, fontweight='bold')
+        self.ax_pattern.set_title("Input Pattern + Noise", fontsize=12, fontweight='bold', color=DARK_TEXT)
+        self.ax_pattern.set_facecolor(DARK_AXES)
         
         self.ax_braiding = self.fig.add_subplot(gs[0, 1])
-        self.ax_braiding.set_title("Anyonic Braiding", fontsize=12, fontweight='bold')
+        self.ax_braiding.set_title("Anyonic Braiding", fontsize=12, fontweight='bold', color=DARK_TEXT)
+        self.ax_braiding.set_facecolor(DARK_AXES)
         
         self.ax_network = self.fig.add_subplot(gs[0, 2])
-        self.ax_network.set_title("Charge Flow Network", fontsize=12, fontweight='bold')
+        self.ax_network.set_title("Charge Flow Network", fontsize=12, fontweight='bold', color=DARK_TEXT)
+        self.ax_network.set_facecolor(DARK_AXES)
         
         self.ax_classification = self.fig.add_subplot(gs[0, 3])
-        self.ax_classification.set_title("Classification Confidence", fontsize=12, fontweight='bold')
+        self.ax_classification.set_title("Classification Confidence", fontsize=12, fontweight='bold', color=DARK_TEXT)
+        self.ax_classification.set_facecolor(DARK_AXES)
         
         # Middle row - Analysis
         self.ax_spin_network = self.fig.add_subplot(gs[1, :2])
-        self.ax_spin_network.set_title("Spin Network Representation", fontsize=12, fontweight='bold')
+        self.ax_spin_network.set_title("Spin Network Representation", fontsize=12, fontweight='bold', color=DARK_TEXT)
+        self.ax_spin_network.set_facecolor(DARK_AXES)
         
         self.ax_robustness = self.fig.add_subplot(gs[1, 2:])
-        self.ax_robustness.set_title("Topological Robustness", fontsize=12, fontweight='bold')
+        self.ax_robustness.set_title("Topological Robustness", fontsize=12, fontweight='bold', color=DARK_TEXT)
+        self.ax_robustness.set_facecolor(DARK_AXES)
         
         # Bottom row - Controls and parameters
         self.ax_controls = self.fig.add_subplot(gs[2, :])
-        self.ax_controls.set_title("TQNN Parameters & Controls", fontsize=12, fontweight='bold')
+        self.ax_controls.set_title("TQNN Parameters & Controls", fontsize=12, fontweight='bold', color=DARK_TEXT)
+        self.ax_controls.set_facecolor(DARK_BG)
         self.ax_controls.axis('off')
         
     def setup_controls(self):
@@ -272,23 +288,24 @@ class TQNNVisualization:
     def draw_pattern(self):
         """Draw the current pattern with noise"""
         self.ax_pattern.clear()
+        self.ax_pattern.set_facecolor(DARK_AXES)
         
         if self.simulator.noisy_pattern is not None:
             # Show noisy pattern
-            self.ax_pattern.imshow(self.simulator.noisy_pattern, cmap='gray_r', 
+            self.ax_pattern.imshow(self.simulator.noisy_pattern, cmap='mako', 
                                  interpolation='nearest', aspect='equal')
             
             # Add noise level indicator
             noise_text = f"Noise: {self.simulator.current_noise_level:.2f}"
             self.ax_pattern.text(0.02, 0.98, noise_text, transform=self.ax_pattern.transAxes,
-                               fontsize=10, verticalalignment='top',
-                               bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+                               fontsize=10, verticalalignment='top', color=DARK_TEXT,
+                               bbox=dict(boxstyle='round', facecolor=DARK_BG, edgecolor=DARK_EDGE, alpha=0.9))
             
             # Add pattern label
             pattern_text = f"Pattern: {self.simulator.current_pattern_label}"
             self.ax_pattern.text(0.02, 0.02, pattern_text, transform=self.ax_pattern.transAxes,
-                               fontsize=10, verticalalignment='bottom',
-                               bbox=dict(boxstyle='round', facecolor='lightblue', alpha=0.8))
+                               fontsize=10, verticalalignment='bottom', color=DARK_TEXT,
+                               bbox=dict(boxstyle='round', facecolor=DARK_BG, edgecolor=DARK_ACCENT, alpha=0.9))
         
         self.ax_pattern.set_xlim(-0.5, self.simulator.pattern_size - 0.5)
         self.ax_pattern.set_ylim(-0.5, self.simulator.pattern_size - 0.5)
@@ -298,11 +315,12 @@ class TQNNVisualization:
     def draw_braiding(self):
         """Draw anyonic braiding visualization"""
         self.ax_braiding.clear()
+        self.ax_braiding.set_facecolor(DARK_AXES)
         
         if not self.show_braiding:
             self.ax_braiding.text(0.5, 0.5, "Braiding Display Off", 
                                 transform=self.ax_braiding.transAxes,
-                                ha='center', va='center', fontsize=12)
+                                ha='center', va='center', fontsize=12, color=DARK_SUBTITLE)
             return
         
         # Draw braiding strands
@@ -320,14 +338,14 @@ class TQNNVisualization:
             self.ax_braiding.add_patch(circle)
             
             # Label
-            self.ax_braiding.text(x, -0.2, f'|q{i}⟩', ha='center', va='top', fontsize=10)
+            self.ax_braiding.text(x, -0.2, f'|q{i}\u27E9', ha='center', va='top', fontsize=10, color=DARK_TEXT)
         
         # Draw crossing indicators
         crossing_time = (self.simulator.braiding_time // 50) % 3
         if crossing_time == 1:
-            self.ax_braiding.plot([-1, 1], [1.5, 1.5], 'r--', linewidth=2, alpha=0.7)
-            self.ax_braiding.text(0, 1.7, "Braiding Operation", ha='center', fontsize=10,
-                                bbox=dict(boxstyle='round', facecolor='red', alpha=0.3))
+            self.ax_braiding.plot([-1, 1], [1.5, 1.5], '--', color=DARK_ACCENT, linewidth=2, alpha=0.7)
+            self.ax_braiding.text(0, 1.7, "Braiding Operation", ha='center', fontsize=10, color=DARK_TEXT,
+                                bbox=dict(boxstyle='round', facecolor=DARK_BG, edgecolor=DARK_ACCENT, alpha=0.8))
         
         self.ax_braiding.set_xlim(-2.5, 2.5)
         self.ax_braiding.set_ylim(-0.5, 2.5)
@@ -337,11 +355,12 @@ class TQNNVisualization:
     def draw_charge_network(self):
         """Draw topological charge flow network"""
         self.ax_network.clear()
+        self.ax_network.set_facecolor(DARK_AXES)
         
         if not self.show_charge_flow:
             self.ax_network.text(0.5, 0.5, "Charge Flow Display Off", 
                                transform=self.ax_network.transAxes,
-                               ha='center', va='center', fontsize=12)
+                               ha='center', va='center', fontsize=12, color=DARK_SUBTITLE)
             return
         
         # Create a simple network
@@ -380,13 +399,13 @@ class TQNNVisualization:
         # Draw labels
         labels = {node: f"{charges[node]:.2f}" for node in G.nodes()}
         nx.draw_networkx_labels(G, node_positions, labels, font_size=10, 
-                               font_weight='bold', ax=self.ax_network)
+                               font_weight='bold', ax=self.ax_network, font_color=DARK_TEXT)
         
         # Conservation law
-        self.ax_network.text(0.5, 0.05, "Charge Conservation: ∑Q_in = ∑Q_out", 
+        self.ax_network.text(0.5, 0.05, "Charge Conservation: \u2211Q_in = \u2211Q_out", 
                            transform=self.ax_network.transAxes,
-                           ha='center', va='bottom', fontsize=10,
-                           bbox=dict(boxstyle='round', facecolor='lightgreen', alpha=0.7))
+                           ha='center', va='bottom', fontsize=10, color=DARK_TEXT,
+                           bbox=dict(boxstyle='round', facecolor=DARK_BG, edgecolor=DARK_ACCENT, alpha=0.9))
         
         self.ax_network.set_xlim(-0.5, 2.5)
         self.ax_network.set_ylim(0, 2)
@@ -395,6 +414,7 @@ class TQNNVisualization:
     def draw_classification(self):
         """Draw classification results"""
         self.ax_classification.clear()
+        self.ax_classification.set_facecolor(DARK_AXES)
         
         if self.simulator.log_probabilities:
             # Bar chart of log probabilities
@@ -411,28 +431,30 @@ class TQNNVisualization:
             bars[correct_idx].set_alpha(0.7)
             
             self.ax_classification.set_xticks(range(len(labels)))
-            self.ax_classification.set_xticklabels(labels, rotation=45)
-            self.ax_classification.set_ylabel("Log Probability")
-            self.ax_classification.grid(True, alpha=0.3)
+            self.ax_classification.set_xticklabels(labels, rotation=45, color=DARK_TEXT)
+            self.ax_classification.set_ylabel("Log Probability", color=DARK_TEXT)
+            self.ax_classification.tick_params(colors=DARK_TEXT)
+            self.ax_classification.grid(True, alpha=0.2, color=DARK_GRID)
             
             # Add prediction result
             pred_text = f"Predicted: {self.simulator.prediction_result}"
             correct_text = f"Correct: {self.simulator.current_pattern_label}"
-            accuracy = "✓" if self.simulator.prediction_result == self.simulator.current_pattern_label else "✗"
+            accuracy = "\u2713" if self.simulator.prediction_result == self.simulator.current_pattern_label else "\u2717"
             
             self.ax_classification.text(0.02, 0.98, f"{pred_text}\n{correct_text} {accuracy}", 
                                       transform=self.ax_classification.transAxes,
-                                      fontsize=10, verticalalignment='top',
-                                      bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+                                      fontsize=10, verticalalignment='top', color=DARK_TEXT,
+                                      bbox=dict(boxstyle='round', facecolor=DARK_BG, edgecolor=DARK_EDGE, alpha=0.9))
         
     def draw_spin_network(self):
         """Draw spin network representation"""
         self.ax_spin_network.clear()
+        self.ax_spin_network.set_facecolor(DARK_AXES)
         
         if not self.show_spin_network:
             self.ax_spin_network.text(0.5, 0.5, "Spin Network Display Off", 
                                     transform=self.ax_spin_network.transAxes,
-                                    ha='center', va='center', fontsize=12)
+                                    ha='center', va='center', fontsize=12, color=DARK_SUBTITLE)
             return
         
         if self.simulator.noisy_pattern is not None:
@@ -453,26 +475,27 @@ class TQNNVisualization:
                     hex_y = y + hex_size * np.sin(angles)
                     
                     hex_patch = Polygon(list(zip(hex_x, hex_y)), 
-                                      facecolor=color, alpha=0.8, edgecolor='black')
+                                      facecolor=color, alpha=0.8, edgecolor=DARK_EDGE)
                     self.ax_spin_network.add_patch(hex_patch)
                     
                     # Add spin label
                     if intensity > 0.5:
-                        self.ax_spin_network.text(x, y, '↑', ha='center', va='center', 
-                                                fontsize=8, fontweight='bold')
+                        self.ax_spin_network.text(x, y, '\u2191', ha='center', va='center', 
+                                                fontsize=8, fontweight='bold', color=DARK_TEXT)
         
         self.ax_spin_network.set_aspect('equal')
         self.ax_spin_network.axis('off')
         
         # Add explanation
-        self.ax_spin_network.text(0.02, 0.98, "Hexagonal Spin Network (↑ = spin up)", 
+        self.ax_spin_network.text(0.02, 0.98, "Hexagonal Spin Network (\u2191 = spin up)", 
                                 transform=self.ax_spin_network.transAxes,
-                                fontsize=10, verticalalignment='top',
-                                bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.8))
+                                fontsize=10, verticalalignment='top', color=DARK_TEXT,
+                                bbox=dict(boxstyle='round', facecolor=DARK_BG, edgecolor=DARK_EDGE, alpha=0.9))
         
     def draw_robustness(self):
         """Draw topological robustness analysis"""
         self.ax_robustness.clear()
+        self.ax_robustness.set_facecolor(DARK_AXES)
         
         if len(self.simulator.confidence_history) > 1:
             # Plot confidence over time
@@ -480,25 +503,28 @@ class TQNNVisualization:
             self.ax_robustness.plot(history, color=seqCmap(0.7), linewidth=2)
             self.ax_robustness.fill_between(range(len(history)), history, alpha=0.3, color=seqCmap(0.7))
             
-            self.ax_robustness.set_xlabel("Time Steps")
-            self.ax_robustness.set_ylabel("Classification Confidence")
+            self.ax_robustness.set_xlabel("Time Steps", color=DARK_TEXT)
+            self.ax_robustness.set_ylabel("Classification Confidence", color=DARK_TEXT)
             self.ax_robustness.set_ylim(min(history) - 0.5, max(history) + 0.5)
-            self.ax_robustness.grid(True, alpha=0.3)
+            self.ax_robustness.tick_params(colors=DARK_TEXT)
+            self.ax_robustness.grid(True, alpha=0.2, color=DARK_GRID)
             
             # Add current noise level indicator
             current_conf = history[-1] if history else 0
             self.ax_robustness.text(0.98, 0.95, f"Current Confidence: {current_conf:.3f}", 
                                   transform=self.ax_robustness.transAxes,
                                   fontsize=10, verticalalignment='top', horizontalalignment='right',
-                                  bbox=dict(boxstyle='round', facecolor='white', alpha=0.8))
+                                  color=DARK_TEXT,
+                                  bbox=dict(boxstyle='round', facecolor=DARK_BG, edgecolor=DARK_EDGE, alpha=0.9))
         else:
             self.ax_robustness.text(0.5, 0.5, "Confidence History\n(Run classification to see)", 
                                   transform=self.ax_robustness.transAxes,
-                                  ha='center', va='center', fontsize=12)
+                                  ha='center', va='center', fontsize=12, color=DARK_SUBTITLE)
         
     def draw_controls_info(self):
         """Draw control information and parameters"""
         self.ax_controls.clear()
+        self.ax_controls.set_facecolor(DARK_BG)
         self.ax_controls.axis('off')
         
         # Current state information
@@ -511,7 +537,9 @@ class TQNNVisualization:
         
         self.ax_controls.text(0.5, 0.7, state_text, ha='center', va='center',
                             transform=self.ax_controls.transAxes, fontsize=11,
-                            bbox=dict(boxstyle='round', facecolor=altCmap(0.05), alpha=0.6))
+                            color=DARK_TEXT,
+                            bbox=dict(boxstyle='round', facecolor=DARK_BG,
+                                      edgecolor=DARK_EDGE, alpha=0.9))
         
         # Instructions
         instructions = (
@@ -522,7 +550,7 @@ class TQNNVisualization:
         
         self.ax_controls.text(0.5, 0.3, instructions, ha='center', va='center',
                             transform=self.ax_controls.transAxes, fontsize=10,
-                            style='italic', color='darkblue')
+                            style='italic', color=DARK_SUBTITLE)
         
     def update_noise(self, val):
         """Update noise level"""

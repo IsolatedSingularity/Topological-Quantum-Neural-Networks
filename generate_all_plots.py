@@ -1,0 +1,96 @@
+#!/usr/bin/env python3
+"""
+Generate All Plots
+
+Regenerates every static and animated visualization in the repository using the
+Agg (non-interactive) backend. Run from the repo root:
+
+    python generate_all_plots.py
+
+Outputs are written to Plots/ by default.
+"""
+
+import os
+import sys
+
+# Use non-interactive backend so this works in headless CI environments
+import matplotlib
+matplotlib.use('Agg')
+
+# ---------------------------------------------------------------------------
+# Path setup
+# ---------------------------------------------------------------------------
+REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
+PLOTS_DIR = os.path.join(REPO_ROOT, 'Plots')
+os.makedirs(PLOTS_DIR, exist_ok=True)
+
+# Add source directories to sys.path so imports resolve
+sys.path.insert(0, os.path.join(REPO_ROOT, 'Code', 'Static Visualization'))
+
+# ---------------------------------------------------------------------------
+# Static visualizations (6 PNGs)
+# ---------------------------------------------------------------------------
+from static_visualizations import (
+    plot_braiding_pattern,
+    plot_large_braiding_pattern,
+    plot_topological_charge_flow,
+    plot_large_topological_charge_flow,
+    plot_logical_gate_structure,
+    plot_large_logical_gate_structure,
+)
+
+STATIC_PLOTS = [
+    (plot_braiding_pattern,              'tqnn_braiding_pattern.png'),
+    (plot_large_braiding_pattern,        'tqnn_large_braiding_pattern.png'),
+    (plot_topological_charge_flow,       'tqnn_charge_flow.png'),
+    (plot_large_topological_charge_flow, 'tqnn_large_charge_flow.png'),
+    (plot_logical_gate_structure,        'tqnn_logical_gate.png'),
+    (plot_large_logical_gate_structure,  'tqnn_large_logical_gate.png'),
+]
+
+# ---------------------------------------------------------------------------
+# Animated visualizations (3 GIFs)
+# ---------------------------------------------------------------------------
+from animated_visualizations import (
+    animate_braiding_pattern,
+    animate_quantum_gate,
+    animate_complex_quantum_circuit,
+)
+
+ANIMATED_PLOTS = [
+    (animate_braiding_pattern,        'tqnn_braiding_animation.gif'),
+    (animate_quantum_gate,            'tqnn_gate_animation.gif'),
+    (animate_complex_quantum_circuit, 'tqnn_complex_circuit_animation.gif'),
+]
+
+
+def main() -> None:
+    print("=" * 60)
+    print("  Generating all plots")
+    print("=" * 60)
+
+    # --- Static ---
+    print("\n--- Static Visualizations (6 PNGs) ---")
+    for func, filename in STATIC_PLOTS:
+        path = os.path.join(PLOTS_DIR, filename)
+        try:
+            func(path)
+        except Exception as exc:
+            print(f"  [FAIL] {filename}: {exc}")
+
+    # --- Animated ---
+    print("\n--- Animated Visualizations (3 GIFs) ---")
+    for func, filename in ANIMATED_PLOTS:
+        path = os.path.join(PLOTS_DIR, filename)
+        try:
+            func(path)
+        except Exception as exc:
+            print(f"  [FAIL] {filename}: {exc}")
+
+    print("\n" + "=" * 60)
+    print(f"  Done. Outputs are in {PLOTS_DIR}")
+    print("=" * 60)
+
+
+if __name__ == '__main__':
+    main()

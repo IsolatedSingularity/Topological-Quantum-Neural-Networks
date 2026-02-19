@@ -1,12 +1,14 @@
 # Topological Quantum Neural Networks
 
-Interactive tools for topological quantum neural networks: real-time tensor network simulation, pattern classification with noise robustness, and 3D Tanner graph visualization.
+Interactive tools for topological quantum neural networks: real-time tensor network simulation, topological pattern classification, cobordism evolution, and robustness analysis.
 
 ![Real-Time Tensor Network Simulator](Plots/tqnn_overall.png)
 
 ## Overview
 
-This project implements Topological Quantum Neural Networks (TQNNs), a machine learning framework where classical deep neural networks emerge as the semi-classical limit of a topological quantum field theory. Instead of training weights through gradient descent, TQNNs encode data into spin-networks and classify patterns by evaluating TQFT transition amplitudes, providing inherent noise robustness through topological protection. The repository includes interactive simulators, visualization tools, and a robustness testing sandbox, all built in Python.
+Conventional neural networks learn by adjusting millions of floating-point weights through gradient descent. **Topological Quantum Neural Networks (TQNNs)** take a fundamentally different approach: they encode each input pixel as the *spin color* of an edge on a spin-network, then evaluate a topological quantum field theory (TQFT) transition amplitude to classify patterns — no gradient computation required.
+
+Because the classification signal lives in a topological invariant, TQNNs are inherently resilient to local noise: flipping a few pixels shifts individual spins, but the global amplitude barely changes — an effect called **topological protection**. This repository provides interactive simulators and visualization tools that let you explore these ideas hands-on.
 
 ## Quick Start
 
@@ -22,11 +24,11 @@ Run any of the interactive applications:
 # Real-time tensor network simulator (tkinter GUI)
 python "Code/Real Time Simulation/interactive_tqnn_tensor_network.py"
 
-# Interactive TQNN classifier (matplotlib GUI)
-python "Code/Image Classification/interactive_tqnn_gui.py"
+# Interactive TQNN classifier (tkinter GUI, 6-panel)
+python "Code/Image Classification/interactive_tqnn_classifier.py"
 
-# 3D Tanner graph visualizer (matplotlib 3D)
-python "Code/Interactive Quantum Tanner/interactive_3d_tanner_graph.py"
+# Cobordism evolution viewer (tkinter GUI)
+python "Code/Cobordism Viewer/cobordism_evolution_viewer.py"
 
 # Robustness sandbox (generates plots)
 python "Code/Static Visualization/tqnn_sandbox.py"
@@ -34,6 +36,9 @@ python "Code/Static Visualization/tqnn_sandbox.py"
 # Static & animated visualizations (generates PNGs and GIFs)
 python "Code/Static Visualization/static_visualizations.py"
 python "Code/Static Visualization/animated_visualizations.py"
+
+# Regenerate all plots + GUI screenshots at once
+python generate_all_plots.py
 ```
 
 <p align="center">
@@ -44,7 +49,16 @@ python "Code/Static Visualization/animated_visualizations.py"
 
 ### Real-Time Tensor Network Simulator
 
-A tkinter dark-themed GUI for real-time TQNN visualization. Draw patterns on a 16x16 canvas and watch them get encoded as hexagonal spin-networks with live updates across four synchronized panels: spin-network topology, TQFT transition amplitudes, 6j-symbol recoupling heatmap, and semi-classical weight distribution. Includes an adjustable $N_{\text{large}}$ parameter (100 to 5000) to explore the semi-classical limit, and a multi-page interactive tutorial.
+Draw a pattern on a 16 × 16 canvas and watch it get encoded, in real time, as a hexagonal spin-network. Four synchronized panels update on every brush stroke:
+
+| Panel | What it shows |
+|---|---|
+| **Spin-network** | Each pixel maps to a node on a hexagonal lattice; edge colors reflect the spin label $j_i = N + \lfloor x_i \rfloor$ |
+| **Transition amplitudes** | Per-class log-probability bars computed from the TQFT amplitude formula |
+| **6j-symbol heatmap** | Recoupling coefficients that govern how three incoming spins fuse at a vertex |
+| **Semi-classical weights** | Distribution of the Gaussian suppression term across all spins |
+
+The $N_{\text{large}}$ slider (100 – 5 000) controls the semi-classical regime: higher values sharpen the amplitude peaks, showing how the TQFT limit converges to classical classification.
 
 ![Tensor Network Simulator](Plots/tqnn_overall.png)
 
@@ -56,86 +70,72 @@ A tkinter dark-themed GUI for real-time TQNN visualization. Draw patterns on a 1
 ```python
 # From Code/Real Time Simulation/interactive_tqnn_tensor_network.py
 class TQNNProcessor:
-    def compute_transition_amplitude(self, input_spins: np.ndarray, 
-                                    proto_mean: np.ndarray, 
-                                    proto_std: np.ndarray) -> Tuple[complex, float]:
+    def compute_transition_amplitude(self, input_spins, proto_mean, proto_std):
         """
-        Compute TQFT transition amplitude using the semi-classical formula.
-        From Marciano et al., the amplitude in the large-j limit is:
-        A = prod_i Delta_{j_i} * exp(-(j_i - j_bar_i)^2/(2*sigma_i^2))
+        TQFT transition amplitude in the large-j limit:
+        A = prod_i Delta_{j_i} * exp(-(j_i - j_bar_i)^2 / (2 sigma_i^2))
+        where Delta_j = 2j + 1 is the quantum dimension.
         """
-        min_len = min(len(input_spins), len(proto_mean), len(proto_std))
-        j = input_spins[:min_len]
-        j_bar = proto_mean[:min_len]
-        sigma = proto_std[:min_len]
-        
-        # Quantum dimension contribution: log(Delta_j) = log(2j + 1)
-        log_quantum_dim = np.sum(np.log(2 * j + 1))
-        
-        # Gaussian suppression term: -(j - j_bar)^2 / (2 * sigma^2)
-        gaussian_term = -np.sum((j - j_bar)**2 / (2 * sigma**2))
-        
-        log_amplitude = log_quantum_dim + gaussian_term
-        amplitude = np.exp(log_amplitude / min_len)
-        return amplitude, log_amplitude
 ```
 
 ---
 
 ### Interactive TQNN Classifier
 
-A matplotlib-based interactive environment with six visualization panels. Supports four geometric pattern types (vertical, horizontal, cross, circle) with a real-time noise slider. Panels display classification confidence, anyonic braiding patterns, charge flow through spin-networks, and topological robustness metrics.
+A tkinter dark-themed GUI with six live panels that let you explore how topological protection keeps classification accurate under noise. Select one of four geometric patterns (vertical, horizontal, cross, circle), drag the noise slider to inject topological defects, and watch how the TQNN's confidence degrades — slowly, because the amplitude is a *global* topological invariant rather than a fragile local feature.
+
+| Panel | Purpose |
+|---|---|
+| **Input + Noise** | Shows the pattern after random pixel flips (simulating local defects) |
+| **Anyonic Braiding** | Animated world-lines of six quasi-particles, illustrating the braiding operations that underpin TQNN computation |
+| **Charge Flow** | Directed graph showing how topological charge propagates from the input layer through hidden nodes to the output |
+| **Classification** | Horizontal bar chart of per-class log-probabilities with the winning class highlighted |
+| **Spin-Network** | Hexagonal lattice where each node color encodes spin magnitude $j_i$ |
+| **Robustness** | Sweep of noise levels (0 – 50 %) showing all class curves; the current noise level is marked |
 
 ```python
-# From Code/Image Classification/interactive_tqnn_gui.py
-class TQNNVisualization:
-    def draw_classification(self):
-        """Draw classification results with real-time confidence"""
-        if self.simulator.log_probabilities:
-            labels = list(self.simulator.log_probabilities.keys())
-            values = list(self.simulator.log_probabilities.values())
-            
-            bars = self.ax_classification.bar(
-                range(len(labels)), 
-                values,
-                color=[seqCmap(0.7) if label == self.simulator.prediction_result 
-                       else seqCmap(0.3) for label in labels]
-            )
-            
-            correct_idx = labels.index(self.simulator.current_pattern_label)
-            bars[correct_idx].set_color('green')
-            bars[correct_idx].set_alpha(0.7)
+# From Code/Image Classification/interactive_tqnn_classifier.py
+class TQNNClassifierGUI:
+    """Tkinter dark-themed GUI with six embedded matplotlib panels."""
+    # --screenshot flag: save a headless capture and exit
+    #   python interactive_tqnn_classifier.py --screenshot Plots/Classifier_Demo.png
 ```
 
-![Interactive TQNN Environment](Plots/Interactive.png)
+![Interactive TQNN Classifier](Plots/Classifier_Demo.png)
 
 ---
 
-### 3D Tanner Graph Visualizer
+### Cobordism Evolution Viewer
 
-An interactive 3D visualization of quantum LDPC Tanner graphs embedded on topological surfaces. Supports genus 0 through 5 with hyperbolic curvature, error injection, and belief propagation syndrome decoding with live animation. Features auto-rotation and adjustable surface parameters.
+A cobordism is a manifold $M$ whose boundary splits into an *input* surface $\Sigma_{\text{in}}$ and an *output* surface $\Sigma_{\text{out}}$. The TQFT functor $Z$ maps $M$ to a linear map $Z(\Sigma_{\text{in}}) \to Z(\Sigma_{\text{out}})$: this is the "forward pass" of a TQNN.
 
-![3D Tanner Graph](Plots/QLDPC_Demo.png)
+This viewer animates the evolution of spin-network amplitudes as a cursor sweeps from $\Sigma_{\text{in}}$ to $\Sigma_{\text{out}}$ through three cobordism types:
+
+| Cobordism | Topology | Effect on spins |
+|---|---|---|
+| **Cylinder** | Identity ($\Sigma \times [0,1]$) | Spins pass through with small thermal jitter |
+| **Pair-of-Pants** | Splitting (genus 0, 3 boundaries) | Spins on the second half become pairwise averages — information shared between output legs |
+| **Genus Handle** | Non-trivial genus | Cyclic coupling mixes distant spins, simulating a loop in the manifold |
+
+```python
+# From Code/Cobordism Viewer/cobordism_evolution_viewer.py
+class CobordismProcessor:
+    """Compute TQFT amplitudes along a cobordism M : Σ_in → Σ_out."""
+    # --screenshot flag: python cobordism_evolution_viewer.py --screenshot Plots/Cobordism_Demo.png
+```
+
+![Cobordism Evolution Viewer](Plots/Cobordism_Demo.png)
 
 ---
 
 ### Robustness Sandbox
 
-A standalone testing environment that trains a TQNN Perceptron on geometric patterns and sweeps noise levels from 0% to 50%. Generates quantitative robustness plots and animated radial confidence GIFs demonstrating topological protection.
+How much noise can a TQNN tolerate before it misclassifies? The sandbox answers this quantitatively: it trains a `TQNNPerceptron` on four geometric patterns, then sweeps noise from 0 % to 50 % while recording per-class log-probabilities. The resulting curve shows a gradual, graceful degradation — the hallmark of topological protection — rather than the abrupt cliff typical of local-feature classifiers.
 
 ```python
 # From Code/Static Visualization/tqnn_sandbox.py
 def plot_degradation(results, target_label, plot_path):
-    """Plots the degradation of classification confidence vs. noise level."""
-    noise_levels = sorted(results.keys())
-    palette = sns.color_palette("mako", n_colors=len(results[0.0]))
-    
-    fig, ax = plt.subplots(figsize=(12, 7))
-    for i, label in enumerate(results[0.0].keys()):
-        log_probs = [results[noise][label] for noise in noise_levels]
-        ax.plot(noise_levels, log_probs, marker='o', 
-                linestyle='--', label=f'Class: {label}', color=palette[i])
-    plt.savefig(plot_path, dpi=300, bbox_inches='tight')
+    """Noise-vs-confidence curves for every class."""
 ```
 
 ![TQNN Robustness](Plots/tqnn_robustness_sandbox.png)
@@ -160,11 +160,13 @@ Pre-generated braiding animations, charge flow diagrams, logical gate structures
 ```
 Code/
   Real Time Simulation/          # Tkinter tensor network simulator (1600+ lines)
-  Image Classification/          # Matplotlib interactive classifier
-  Interactive Quantum Tanner/    # 3D QLDPC Tanner graph visualizer
+  Image Classification/          # Tkinter 6-panel TQNN classifier
+  Cobordism Viewer/              # Tkinter cobordism evolution viewer
   Static Visualization/          # Sandbox, static plots, animated GIFs, helpers
-Plots/                           # Generated figures and animations
+Plots/                           # Generated figures, animations, and GUI screenshots
 References/                      # Source papers (Marciano, Lulli, Fields)
+tests/                           # pytest suite (import + core logic)
+generate_all_plots.py            # Regenerate all visuals + GUI screenshots
 ```
 
 ## Tech Stack
@@ -172,10 +174,11 @@ References/                      # Source papers (Marciano, Lulli, Fields)
 | Category | Tools |
 |---|---|
 | Language | Python 3.10+ |
-| GUI | tkinter, matplotlib (interactive backends) |
+| GUI | tkinter (dark theme), matplotlib embedded via `FigureCanvasTkAgg` |
 | Computation | numpy, scipy (linear algebra, optimization) |
 | Visualization | matplotlib, seaborn (`mako` / `cubehelix` palettes) |
 | Graph Theory | networkx |
+| Testing | pytest, GitHub Actions CI (3.10 / 3.11 / 3.12) |
 
 ---
 
@@ -237,7 +240,7 @@ $$j_1 \otimes j_2 = \bigoplus_{j_3=|j_1-j_2|}^{j_1+j_2} j_3$$
 - [ ] **GPU acceleration**: Profile and optimize spin-network evaluation with CuPy or JAX
 - [ ] **PyPI packaging**: Package the core TQNN library for `pip install` distribution
 - [x] **CI/CD pipeline**: GitHub Actions workflow across Python 3.10/3.11/3.12 (`.github/workflows/ci.yml`)
-- [ ] **Export functionality**: Add save/export for visualization states (PNG, JSON)
+- [x] **Export functionality**: `--screenshot` flag on all tkinter GUIs for reproducible images (`generate_all_plots.py`)
 
 > [!NOTE]
 > This implementation simulates topological quantum behavior on classical hardware. While it demonstrates the principles of topological robustness, it does not provide the computational advantages of a true quantum computer.

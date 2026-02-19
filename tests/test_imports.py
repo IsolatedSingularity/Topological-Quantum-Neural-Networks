@@ -14,7 +14,8 @@ import pytest
 # Ensure source directories are on the path
 REPO_ROOT = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.join(REPO_ROOT, 'Code', 'Static Visualization'))
-sys.path.insert(0, os.path.join(REPO_ROOT, 'Code', 'Interactive Quantum Tanner'))
+sys.path.insert(0, os.path.join(REPO_ROOT, 'Code', 'Image Classification'))
+sys.path.insert(0, os.path.join(REPO_ROOT, 'Code', 'Cobordism Viewer'))
 
 
 # Use Agg backend so tests don't open windows
@@ -27,7 +28,8 @@ MODULES = [
     'static_visualizations',
     'animated_visualizations',
     'tqnn_sandbox',
-    'topological_utilities',
+    'interactive_tqnn_classifier',
+    'cobordism_evolution_viewer',
 ]
 
 

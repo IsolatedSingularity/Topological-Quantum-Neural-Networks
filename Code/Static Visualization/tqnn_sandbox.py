@@ -217,6 +217,27 @@ def animate_robustness_test(tqnn, test_pattern, test_label, noise_levels, animat
     print("Animation generated successfully.")
 
 
+def run_sandbox(plot_path: str, animation_path: str) -> None:
+    """Run the sandbox experiment with explicit output paths (used by generate_all_plots)."""
+    patterns, labels = create_simple_patterns()
+    tqnn = TQNNPerceptron()
+    tqnn.train(patterns, labels)
+
+    test_pattern = patterns[0]
+    test_label = labels[0]
+    noise_levels = np.linspace(0, 0.5, 60)
+    degradation_results = {}
+
+    for noise in noise_levels:
+        noisy_pattern = add_topological_defect(test_pattern, noise)
+        _pred_label, log_probs = tqnn.predict(noisy_pattern)
+        degradation_results[noise] = log_probs
+
+    plot_degradation(degradation_results, test_label, plot_path)
+    animate_robustness_test(tqnn, test_pattern, test_label, noise_levels, animation_path)
+    print(f"  [OK]   sandbox -> {os.path.basename(plot_path)}, {os.path.basename(animation_path)}")
+
+
 def main():
     """
     Main function to run the TQNN sandbox experiment.

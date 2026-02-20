@@ -6,6 +6,8 @@
 
 Interactive tools for topological quantum neural networks: real-time tensor network simulation, topological pattern classification, cobordism evolution, and robustness analysis.
 
+[Overview](#overview) - [Quick Start](#quick-start) - [Features](#features) - [Architecture](#architecture) - [Tech Stack](#tech-stack) - [References](#references) - [Citation](#citation) - [Contact](#questions-and-contact)
+
 ![Real-Time Tensor Network Simulator](Plots/tqnn_overall.png)
 
 ## Overview
@@ -13,6 +15,10 @@ Interactive tools for topological quantum neural networks: real-time tensor netw
 This toolkit provides interactive simulators and batch visualization pipelines for **Topological Quantum Neural Networks (TQNNs)**, a gradient-free classification framework where inputs are encoded as spin-networks and classified via [TQFT](https://arxiv.org/abs/2210.13741) transition amplitudes. Because the classification signal is a topological invariant rather than a set of learned weights, TQNNs exhibit inherent resilience to local noise, an effect called **topological protection**.
 
 The library implements the full pipeline: spin-network encoding, amplitude evaluation, prototype-based classification, cobordism evolution, and noise-robustness analysis, all exposed through three interactive tkinter GUIs and a suite of static/animated visualization generators (~5,800 lines of Python).
+
+### Why Topological?
+
+Conventional quantum neural networks rely on parameterized circuits whose gradients vanish exponentially as qubit count grows (the **barren plateau** problem). TQNNs sidestep this entirely: classification is driven by topological invariants that are, by definition, insensitive to smooth local perturbations. The result is a model whose accuracy degrades **gracefully** under noise rather than collapsing abruptly, without requiring explicit quantum error correction.
 
 ## Quick Start
 
@@ -172,14 +178,6 @@ The quantum dimension factor $(2j_i + 1)$ and the topological nature of the ampl
 
 ---
 
-## Next Steps
-
-- [ ] **Qiskit / PennyLane backend**: Integrate quantum circuit backends for hardware-ready execution
-- [x] **Unit test coverage**: pytest suite for TQNN processor and spin-network encoding (`tests/`)
-- [ ] **GPU acceleration**: Profile and optimize spin-network evaluation with CuPy or JAX
-- [ ] **PyPI packaging**: Package the core TQNN library for `pip install` distribution
-- [x] **CI/CD pipeline**: GitHub Actions workflow across Python 3.10/3.11/3.12 (`.github/workflows/ci.yml`)
-
 ## References
 
 - Marciano, A., Zappala, E., Torda, A., Lulli, M., et al. [*DNNs as the Semi-Classical Limit of TQNNs: The Problem of Generalisation*](https://arxiv.org/abs/2210.13741). arXiv:2210.13741, 2022.
@@ -210,9 +208,9 @@ Other quantum computing projects by the same author:
 |---|---|
 | [Quantum-Chemistry-Eigensolver](https://github.com/IsolatedSingularity/Quantum-Chemistry-Eigensolver) | Variational quantum eigensolver for molecular ground-state energies |
 | [Bloc-Fantome](https://github.com/IsolatedSingularity/Bloc-Fantome) | Quantum-inspired blockchain exploration |
-| [Leonne](https://github.com/btq-ag/Leonne) | Modular consensus networks for cryptographic proof (BTQ) |
-| [QRiNG](https://github.com/btq-ag/QRiNG) | Quantum random number generation for consensus protocols (BTQ) |
-| [QLDPC](https://github.com/btq-ag/QLDPC) | Quantum LDPC code construction and circuit builder (BTQ) |
+| [Leonne](https://github.com/btq-ag/Leonne) | Modular consensus networks for cryptographic proof |
+| [QRiNG](https://github.com/btq-ag/QRiNG) | Quantum random number generation for consensus protocols |
+| [QLDPC](https://github.com/btq-ag/QLDPC) | Quantum LDPC code construction and circuit builder |
 
 ## Questions and Contact
 

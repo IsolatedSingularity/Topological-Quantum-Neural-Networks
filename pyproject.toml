@@ -39,6 +39,9 @@ dependencies = [
     "sympy>=1.12",
 ]
 
+[project.optional-dependencies]
+dev = ["pytest>=7.0", "ruff>=0.4.0", "mypy>=1.0", "pytest-cov>=4.0"]
+
 [project.urls]
 Homepage = "https://github.com/IsolatedSingularity/Topological-Quantum-Neural-Networks"
 Repository = "https://github.com/IsolatedSingularity/Topological-Quantum-Neural-Networks"
@@ -51,6 +54,28 @@ tqnn-cobordism = "tqnn.cobordism.gui:main"
 
 [tool.setuptools.packages.find]
 include = ["tqnn*"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F"]
+ignore = ["E501", "E701", "E702"]
+
+[tool.ruff.lint.per-file-ignores]
+"tqnn/classifier/gui.py" = ["E402"]
+"tqnn/cobordism/gui.py" = ["E402"]
+"tqnn/simulation/gui.py" = ["E402"]
+"tqnn/visualization/static.py" = ["E402"]
+"tqnn/visualization/animated.py" = ["E402"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

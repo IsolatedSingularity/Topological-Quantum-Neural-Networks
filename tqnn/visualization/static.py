@@ -13,6 +13,7 @@ The visualizations include:
 from __future__ import annotations
 
 import os
+from typing import Any
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -25,7 +26,7 @@ seqCmap = sns.color_palette("mako", as_cmap=True)
 divCmap = sns.cubehelix_palette(start=.5, rot=-.5, as_cmap=True)
 altCmap = sns.cubehelix_palette(start=2, rot=0, dark=0, light=.95, reverse=True, as_cmap=True)
 
-from tqnn.theme import DARK_BG, DARK_AXES, DARK_TEXT, DARK_ACCENT, DARK_GRID, DARK_EDGE
+from tqnn.theme import DARK_BG, DARK_AXES, DARK_TEXT, DARK_EDGE
 DARK_SUBTITLE = '#aaaaaa'
 
 # Create the output directory for plots if it doesn't exist
@@ -53,7 +54,7 @@ def plot_braiding_pattern(save_path: str) -> None:
 
     y_coords = np.array([0] + [c[1] for c in crossings] + [1])
     strand_pos = np.arange(n_strands)
-    paths = {i: [] for i in range(n_strands)}
+    paths: dict[int, Any] = {i: [] for i in range(n_strands)}
     current_pos = np.linspace(-1, 1, n_strands)
 
     # Generate the paths for each strand
@@ -143,7 +144,7 @@ def plot_large_braiding_pattern(save_path: str) -> None:
 
     y_coords = np.array([0] + [c[1] for c in crossings] + [1])
     strand_pos = np.arange(n_strands)
-    paths = {i: [] for i in range(n_strands)}
+    paths: dict[int, Any] = {i: [] for i in range(n_strands)}
     current_pos = np.linspace(-1.5, 1.5, n_strands)
 
     # Generate the paths for each strand
@@ -252,7 +253,7 @@ def plot_topological_charge_flow(save_path: str) -> None:
     ax.text(0.5, 0.05,
             'Charge is conserved at each interaction vertex, protecting information from local errors.',
             transform=fig.transFigure, ha='center', fontsize=12, style='italic', color=DARK_SUBTITLE)
-    plt.tight_layout(rect=[0, 0.1, 1, 0.95])
+    plt.tight_layout(rect=(0, 0.1, 1, 0.95))
     plt.axis('off')
     plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor=DARK_BG)
     plt.close()
@@ -316,7 +317,7 @@ def plot_large_topological_charge_flow(save_path: str) -> None:
     ax.text(0.5, 0.05,
             'Information is robustly preserved as charge is conserved through multiple network layers.',
             transform=fig.transFigure, ha='center', fontsize=12, style='italic', color=DARK_SUBTITLE)
-    plt.tight_layout(rect=[0, 0.1, 1, 0.95])
+    plt.tight_layout(rect=(0, 0.1, 1, 0.95))
     plt.axis('off')
     plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor=DARK_BG)
     plt.close()
@@ -376,7 +377,7 @@ def plot_logical_gate_structure(save_path: str) -> None:
         transform=fig.transFigure, ha='center', fontsize=12, style='italic', color=DARK_SUBTITLE)
 
     plt.axis('off')
-    plt.tight_layout(rect=[0, 0.1, 1, 0.95])
+    plt.tight_layout(rect=(0, 0.1, 1, 0.95))
     plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor=DARK_BG)
     plt.close()
     print(f"Saved logical gate structure visualization to {save_path}")
@@ -443,13 +444,13 @@ def plot_large_logical_gate_structure(save_path: str) -> None:
         Line2D([0], [0], marker='o', color='w', label='Standard Node',
                markerfacecolor=seqCmap(0.2), markersize=15, markeredgecolor=DARK_EDGE)
     ]
-    legend = ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.05),
+    ax.legend(handles=legend_elements, loc='upper center', bbox_to_anchor=(0.5, -0.05),
               fancybox=True, shadow=True, ncol=3, fontsize=12,
               facecolor=DARK_BG, edgecolor=DARK_EDGE, labelcolor=DARK_TEXT)
 
     ax.set_title('TQNN Toffoli Gate with Symmetry-Protected Nodes', fontsize=18, pad=20, color=DARK_TEXT)
     plt.axis('off')
-    plt.tight_layout(rect=[0, 0.1, 1, 0.95])
+    plt.tight_layout(rect=(0, 0.1, 1, 0.95))
     plt.savefig(save_path, dpi=300, bbox_inches='tight', facecolor=DARK_BG)
     plt.close()
     print(f"Saved large logical gate structure visualization to {save_path}")

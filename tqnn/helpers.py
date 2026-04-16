@@ -29,7 +29,8 @@ def create_spin_network_from_pattern(pattern: np.ndarray) -> np.ndarray:
     flat_pattern = pattern.flatten()
     # Scale binary pattern (0 or 1) to a simple spin representation
     # j = N + floor(x_i * 10) mapping from the papers
-    return N_LARGE + np.floor(flat_pattern * 10)
+    result: np.ndarray = N_LARGE + np.floor(flat_pattern * 10)
+    return result
 
 def add_topological_defect(pattern: np.ndarray, noise_level: float) -> np.ndarray:
     """
@@ -45,7 +46,8 @@ def add_topological_defect(pattern: np.ndarray, noise_level: float) -> np.ndarra
         np.array: The pattern with added noise.
     """
     if noise_level == 0.0:
-        return pattern.copy()
+        result: np.ndarray = pattern.copy()
+        return result
 
     noisy_pattern = pattern.copy()
     num_flips = int(noise_level * noisy_pattern.size)
@@ -57,7 +59,8 @@ def add_topological_defect(pattern: np.ndarray, noise_level: float) -> np.ndarra
     # Flip the chosen pixels (0 to 1, 1 to 0)
     noisy_pattern[row_indices, col_indices] = 1 - noisy_pattern[row_indices, col_indices]
     
-    return noisy_pattern
+    noisy: np.ndarray = noisy_pattern
+    return noisy
 
 class TQNNPerceptron:
     """
@@ -89,7 +92,7 @@ class TQNNPerceptron:
         self.class_labels = unique_labels
 
         for label in unique_labels:
-            class_patterns = [patterns[i] for i, l in enumerate(labels) if l == label]
+            class_patterns = [patterns[i] for i, lbl in enumerate(labels) if lbl == label]
             
             # Convert all patterns in the class to spin-networks
             class_spins = [create_spin_network_from_pattern(p) for p in class_patterns]
@@ -116,7 +119,7 @@ class TQNNPerceptron:
 
         This is based on the semi-classical amplitude formula from the papers:
         A = product(Delta_j * exp(-(j-j_bar)^2 / (2*sigma^2)))
-        where Delta_j is the quantum dimension (j+1 for SU(2)).
+        where Delta_j is the quantum dimension (2j+1 for SU(2)).
         The log probability is log(|A|^2). We ignore the complex phase for simplicity.
 
         Args:
@@ -127,13 +130,14 @@ class TQNNPerceptron:
         Returns:
             float: The log probability of the input belonging to the prototype's class.
         """
-        # Quantum dimension term: log((2j+1)^2) = 2*log(2j+1)
+        # Quantum dimension term: sum(log(2j+1))
         quantum_dim_term = np.sum(np.log(2 * input_spins + 1))
 
         # Gaussian term
         gaussian_term = -np.sum(((input_spins - proto_mean) ** 2) / (2 * proto_std ** 2))
         
-        return quantum_dim_term + gaussian_term
+        result: float = quantum_dim_term + gaussian_term
+        return result
 
     def predict(self, pattern: np.ndarray) -> tuple[str | None, dict[str, float]]:
         """
@@ -158,6 +162,6 @@ class TQNNPerceptron:
             return None, {}
             
         # The predicted label is the one with the highest log probability
-        predicted_label = max(log_probs, key=log_probs.get)
+        predicted_label = max(log_probs, key=lambda k: log_probs[k])
         
         return predicted_label, log_probs 

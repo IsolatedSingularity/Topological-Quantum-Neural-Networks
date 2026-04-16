@@ -25,19 +25,13 @@ Author: TQNN Research Team
 """
 
 import tkinter as tk
-from tkinter import ttk, messagebox, Canvas
+from tkinter import ttk, Canvas
 import numpy as np
-import math
-from typing import Dict, List, Tuple, Optional, Any
-import time
 
 # Scientific computing
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-import matplotlib.patches as mpatches
 from matplotlib.patches import RegularPolygon
-from matplotlib.collections import PatchCollection
 import seaborn as sns
 
 # Set up color palettes for consistency with project standards
@@ -47,9 +41,6 @@ divCmap = sns.cubehelix_palette(start=.5, rot=-.5, as_cmap=True)
 
 # Import processor classes (extracted for independent testing)
 from tqnn.processor import (
-    SpinNetworkMode,
-    SpinNetworkState,
-    ClassPrototype,
     TQNNProcessor,
 )
 lightCmap = sns.cubehelix_palette(start=2, rot=0, dark=0, light=.95, reverse=True, as_cmap=True)
@@ -479,6 +470,8 @@ class TutorialWindow:
         """Display a specific tutorial page."""
         self.current_page = max(0, min(len(self.TUTORIAL_PAGES) - 1, page_idx))
         page = self.TUTORIAL_PAGES[self.current_page]
+        
+        assert self.text_widget is not None
         
         # Update title
         self.title_label.config(text=page["title"])
@@ -1015,7 +1008,7 @@ SEMI-CLASSICAL LIMIT (N→∞):
         
         labels = list(self.processor.log_probabilities.keys())
         log_probs = list(self.processor.log_probabilities.values())
-        amplitudes = [np.abs(self.processor.transition_amplitudes[l]) for l in labels]
+        amplitudes = [np.abs(self.processor.transition_amplitudes[lbl]) for lbl in labels]
         
         # Normalize for probability interpretation
         log_probs_arr = np.array(log_probs)
@@ -1133,8 +1126,8 @@ SEMI-CLASSICAL LIMIT (N→∞):
         
         # Left: Weight values
         colors = [seqCmap(0.2 + 0.6 * w) for w in w_sample]
-        bars = self.ax_semiclass.bar(range(n_show), w_sample, color=colors,
-                                    edgecolor='none', alpha=0.8, width=0.8)
+        self.ax_semiclass.bar(range(n_show), w_sample, color=colors,
+                              edgecolor='none', alpha=0.8, width=0.8)
         
         # Add classical activation line
         activation = self.processor.classical_activation

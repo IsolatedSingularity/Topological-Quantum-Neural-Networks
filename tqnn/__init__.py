@@ -12,3 +12,7 @@ from tqnn.processor import (
     ClassPrototype as ClassPrototype,
     SpinNetworkMode as SpinNetworkMode,
 )
+from tqnn.invariants import (
+    jonesPolynomial as jonesPolynomial,
+    bracketPolynomial as bracketPolynomial,
+)

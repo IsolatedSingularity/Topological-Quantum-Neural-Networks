@@ -13,7 +13,7 @@ Extracted from tqnn.simulation.gui to allow independent testing and reuse.
 from __future__ import annotations
 
 import numpy as np
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 from dataclasses import dataclass
 from enum import Enum
 from collections import deque
@@ -48,7 +48,7 @@ class SpinNetworkState:
     n_edges: int
     spin_labels: np.ndarray
     quantum_dimensions: np.ndarray
-    intertwiner_labels: np.ndarray = None
+    intertwiner_labels: Optional[np.ndarray] = None
     N_large: int = 1000
     transition_amplitude: complex = 1.0
     log_amplitude: float = 0.0
@@ -90,7 +90,7 @@ class TQNNProcessor:
         """Initialize the TQNN processor"""
         self.grid_size = grid_size
         self.N_large = N_large  # Large spin for semi-classical limit
-        self.current_state = None
+        self.current_state: Optional[SpinNetworkState] = None
         self.network_mode = SpinNetworkMode.HEXAGONAL
 
         # Spin-network components
@@ -118,7 +118,7 @@ class TQNNProcessor:
 
         # Hexagonal lattice for visualization
         self.hex_positions: List = []
-        self.hex_spins: List = []
+        self.hex_spins: np.ndarray = np.zeros(0)
         self._generate_hexagonal_lattice()
 
     def _initialize_default_prototypes(self) -> None:
@@ -317,8 +317,7 @@ class TQNNProcessor:
         Each off-diagonal entry (i, k) is computed from a valid recoupling
         using Clebsch-Gordan admissible intermediate spins:
           j3 in {|j1-j2|, ..., j1+j2}  (integer steps)
-        The recoupling matrix element is:
-          U_{j12, j23} = (-1)^{j1+j2+j3+j4} sqrt((2j12+1)(2j23+1)) * {6j}
+        The matrix stores raw 6j-symbol values without sign or sqrt prefactors.
 
         Returns:
             Matrix of recoupling coefficients.

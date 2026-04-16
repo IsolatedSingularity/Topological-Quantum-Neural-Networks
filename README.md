@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/IsolatedSingularity/Topological-Quantum-Neural-Networks/actions/workflows/ci.yml/badge.svg)](https://github.com/IsolatedSingularity/Topological-Quantum-Neural-Networks/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Interactive tools for topological quantum neural networks: real-time tensor network simulation, topological pattern classification, cobordism evolution, and robustness analysis.
 
@@ -12,13 +12,13 @@ Interactive tools for topological quantum neural networks: real-time tensor netw
 
 ## Overview
 
-This toolkit provides interactive simulators and batch visualization pipelines for **Topological Quantum Neural Networks (TQNNs)**, a gradient-free classification framework where inputs are encoded as spin-networks and classified via [TQFT](https://arxiv.org/abs/2210.13741) transition amplitudes. Because the classification signal is a topological invariant rather than a set of learned weights, TQNNs exhibit inherent resilience to local noise, an effect called **topological protection**.
+This toolkit provides interactive simulators and batch visualization pipelines for **Topological Quantum Neural Networks (TQNNs)**, a gradient-free classification framework where the framework encodes inputs as spin-networks and classifies them via [TQFT](https://arxiv.org/abs/2210.13741) transition amplitudes. Because the classification signal is a topological invariant rather than a set of learned weights, TQNNs exhibit inherent resilience to local noise, an effect called **topological protection**.
 
-The library implements the full pipeline: spin-network encoding, amplitude evaluation, prototype-based classification, cobordism evolution, and noise-robustness analysis, all exposed through three interactive tkinter GUIs and a suite of static/animated visualization generators (~5,800 lines of Python).
+The library implements the full pipeline: spin-network encoding, amplitude evaluation, prototype-based classification, cobordism evolution, and noise-robustness analysis, all accessible through three interactive tkinter GUIs and a suite of static/animated visualization generators (~5,800 lines of Python).
 
 ### Why Topological?
 
-Conventional quantum neural networks rely on parameterized circuits whose gradients vanish exponentially as qubit count grows (the **barren plateau** problem). TQNNs sidestep this entirely: classification is driven by topological invariants that are, by definition, insensitive to smooth local perturbations. The result is a model whose accuracy degrades **gracefully** under noise rather than collapsing abruptly, without requiring explicit quantum error correction.
+Conventional quantum neural networks rely on parameterized circuits whose gradients vanish exponentially as qubit count grows (the **barren plateau** problem). TQNNs sidestep this entirely: topological invariants drive the classification that are, by definition, insensitive to smooth local perturbations. The result is a model whose accuracy degrades **gracefully** under noise rather than collapsing abruptly, without requiring explicit quantum error correction.
 
 ## Quick Start
 
@@ -58,7 +58,7 @@ python generate_all_plots.py
 
 ### Real-Time Tensor Network Simulator
 
-Draw a pattern on a 16 × 16 canvas and watch it get encoded, in real time, as a hexagonal spin-network. Four synchronized panels update on every brush stroke:
+Draw a pattern on a 16 × 16 canvas and watch the classifier encode it, in real time, as a hexagonal spin-network. Four synchronized panels update on every brush stroke:
 
 | Panel | What it shows |
 |---|---|
@@ -87,7 +87,7 @@ A tkinter dark-themed GUI with six live panels that let you explore how topologi
 | **Charge Flow** | Directed graph showing how topological charge propagates from the input layer through hidden nodes to the output |
 | **Classification** | Horizontal bar chart of per-class log-probabilities with the winning class highlighted |
 | **Spin-Network** | Hexagonal lattice where each node color encodes spin magnitude $j_i$ |
-| **Robustness** | Sweep of noise levels (0 to 50%) showing all class curves; the current noise level is marked |
+| **Robustness** | Sweep of noise levels (0 to 50%) showing all class curves; a marker highlights the current noise level |
 
 ![Interactive TQNN Classifier](Plots/topology.png)
 
@@ -132,7 +132,7 @@ Pre-generated visualizations of the topological structures underlying TQNN compu
 
 ## Architecture
 
-The codebase is organized around processor classes that implement the TQFT math and GUI classes that provide interactive frontends.
+Processor classes implement the TQFT math; GUI classes provide interactive frontends.
 
 | Class | Module | Role |
 |---|---|---|
@@ -157,14 +157,14 @@ All GUIs share a consistent dark theme (`#1a1a1a` background, `#00ff88` accent) 
 | Computation | numpy, scipy (linear algebra, special functions, optimization) |
 | Visualization | matplotlib, seaborn (`mako` / `cubehelix` palettes), GIF export via `PillowWriter` |
 | Graph Theory | networkx (spin-network topology, charge-flow graphs) |
-| Testing | pytest (20 tests), GitHub Actions CI (Python 3.10 / 3.11 / 3.12) |
+| Testing | pytest (39 tests), GitHub Actions CI (Python 3.10 / 3.11 / 3.12) |
 
 ---
 
 <details>
 <summary><h2>Theoretical Background</h2></summary>
 
-The core thesis, inspired by [Marciano et al. (2022)](https://arxiv.org/abs/2210.13741), is that conventional DNNs can be understood as the semi-classical limit of a more general TQNN framework. TQNNs encode input data into **spin-networks** whose edges carry irreducible representations of $SU(2)_k$, then classify by evaluating TQFT transition amplitudes.
+The core thesis, inspired by [Marciano et al. (2022)](https://arxiv.org/abs/2210.13741), is that conventional DNNs represent the semi-classical limit of a more general TQNN framework. TQNNs encode input data into **spin-networks** whose edges carry irreducible representations of $SU(2)_k$, then classify by evaluating TQFT transition amplitudes.
 
 **Encoding.** Each input value $x_i$ maps to a spin label:
 

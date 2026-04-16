@@ -41,9 +41,25 @@ Plots/                  Generated figures, GIFs, and screenshots
 ## Code Style
 
 - Python 3.10+ syntax
+- **camelCase** for all identifiers (overrides PEP 8 snake_case)
 - Type hints on public APIs
 - Docstrings for classes and public methods
 - Consistent dark theme (`#1a1a1a` background, `#00ff88` accent) for all GUIs and plots
+
+## Linting and Type Checking
+
+Before submitting, ensure your changes pass both linters:
+
+```bash
+ruff check tqnn/
+mypy tqnn/ --ignore-missing-imports
+```
+
+Both tools are configured in `pyproject.toml`. Install dev dependencies with:
+
+```bash
+pip install -e ".[dev]"
+```
 
 ## Submitting Changes
 

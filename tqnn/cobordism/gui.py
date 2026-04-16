@@ -24,8 +24,6 @@ GUI Framework: tkinter + FigureCanvasTkAgg (matching TQNN toolkit style)
 
 from __future__ import annotations
 
-import sys
-import os
 import math
 import numpy as np
 import tkinter as tk
@@ -34,12 +32,8 @@ from typing import Dict, List, Tuple
 
 import matplotlib
 matplotlib.use("TkAgg")
-import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
-from matplotlib.patches import FancyArrowPatch, Circle
-from matplotlib.collections import LineCollection
-import matplotlib.colors as mcolors
 import seaborn as sns
 import networkx as nx
 
@@ -159,7 +153,7 @@ class CobordismProcessor:
             log_dim   = np.sum(np.log(2 * j + 1))
             gaussian   = -np.sum((j - j_bar)**2 / (2 * sig**2))
             self.class_log_amps[label] = (log_dim + gaussian) / n
-        best = max(self.class_log_amps, key=self.class_log_amps.get)
+        best = max(self.class_log_amps, key=lambda k: self.class_log_amps[k])
         self.prediction = best
         # output spins = input modified by cobordism topology
         self.output_spins = self._cobordism_transform(self.input_spins, 1.0)
@@ -172,7 +166,7 @@ class CobordismProcessor:
         and the genus handle applies a cyclic permutation. They illustrate the
         qualitative effect of each cobordism topology on spin data.
         """
-        out = spins.copy()
+        out: np.ndarray = spins.copy()
         if self.cobordism_type == "Cylinder":
             # Identity cobordism: small thermal jitter proportional to frac
             out += frac * np.random.normal(0, 0.5, len(out))

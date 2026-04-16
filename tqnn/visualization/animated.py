@@ -12,6 +12,7 @@ The animations include:
 from __future__ import annotations
 
 import os
+from typing import Any
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
@@ -26,7 +27,7 @@ seqCmap = sns.color_palette("mako", as_cmap=True)
 divCmap = sns.cubehelix_palette(start=.5, rot=-.5, as_cmap=True)
 altCmap = sns.cubehelix_palette(start=2, rot=0, dark=0, light=.95, reverse=True, as_cmap=True)
 
-from tqnn.theme import DARK_BG, DARK_AXES, DARK_TEXT, DARK_ACCENT, DARK_GRID, DARK_EDGE
+from tqnn.theme import DARK_BG, DARK_AXES, DARK_TEXT, DARK_EDGE
 DARK_SUBTITLE = '#aaaaaa'
 
 # Define the output directory for plots
@@ -64,7 +65,7 @@ def animate_braiding_pattern(save_path: str) -> None:
 
     y_coords = np.array([0] + [c[1] for c in crossings] + [1])
     strand_pos = np.arange(n_strands)
-    paths = {i: [] for i in range(n_strands)}
+    paths: dict[int, Any] = {i: [] for i in range(n_strands)}
     current_pos = np.linspace(-1.5, 1.5, n_strands)
 
     for i in range(len(y_coords) - 1):
@@ -151,8 +152,6 @@ def animate_quantum_gate(save_path: str) -> None:
     ]
 
     pos = nx.get_node_attributes(G, 'pos')
-    labels = nx.get_node_attributes(G, 'label')
-    node_colors = [data['color'] for data in G.nodes.values()]
 
     # Define the animation sequence
     input_nodes = ['ctrl1_in', 'ctrl2_in', 'targ_in']
@@ -249,7 +248,7 @@ def animate_complex_quantum_circuit(save_path: str) -> None:
     }
     
     # Add nodes to graph
-    for name, data in nodes_data.items(): G.add_node(name, **data)
+    for name, data in nodes_data.items(): G.add_node(name, **data)  # type: ignore[arg-type]
     
     # Define edges and build stages
     edges_data = {

@@ -21,9 +21,6 @@ Architecture: Event-driven with embedded matplotlib via FigureCanvasTkAgg
 
 from __future__ import annotations
 
-import sys
-import os
-import time
 import numpy as np
 import tkinter as tk
 from tkinter import ttk
@@ -32,11 +29,9 @@ from typing import Dict, List, Tuple
 
 import matplotlib
 matplotlib.use("TkAgg")
-import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.patches import Circle
-import matplotlib.patches as mpatches
 import seaborn as sns
 import networkx as nx
 
@@ -77,7 +72,7 @@ class TQNNSimulator:
         self.current_pattern_label: str = self.labels[0]
         self.current_noise: float = 0.0
         self.noisy_pattern: np.ndarray = self.current_pattern.copy()
-        self.prediction: str = ""
+        self.prediction: str | None = ""
         self.log_probs: Dict[str, float] = {}
         self.confidence_history: deque = deque(maxlen=80)
         self.topological_charge: float = 0.0

@@ -93,7 +93,7 @@ def plot_braiding_pattern(save_path: str) -> None:
     # Draw over/under crossings
     for (s_over, s_under), y_pos in crossings:
         over_path = paths[s_over]
-        cross_idx_over = np.argmin(np.abs(over_path[:, 1] - y_pos))
+        cross_idx_over = int(np.argmin(np.abs(over_path[:, 1] - y_pos)))
         segment = over_path[max(0, cross_idx_over - 6):min(len(over_path), cross_idx_over + 6)]
         
         # Draw a dark background to create the illusion of a break
@@ -178,7 +178,7 @@ def plot_large_braiding_pattern(save_path: str) -> None:
 
     for (s_over, s_under), y_pos in crossings:
         over_path = paths[s_over]
-        cross_idx_over = np.argmin(np.abs(over_path[:, 1] - y_pos))
+        cross_idx_over = int(np.argmin(np.abs(over_path[:, 1] - y_pos)))
         segment = over_path[max(0, cross_idx_over - 6):min(len(over_path), cross_idx_over + 6)]
         
         ax.plot(segment[:, 0], segment[:, 1], color=DARK_AXES, linewidth=16, solid_capstyle='round', zorder=5)

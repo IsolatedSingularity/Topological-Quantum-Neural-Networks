@@ -248,7 +248,7 @@ def animate_complex_quantum_circuit(save_path: str) -> None:
     }
     
     # Add nodes to graph
-    for name, data in nodes_data.items(): G.add_node(name, **data)  # type: ignore[arg-type]
+    for name, data in nodes_data.items(): G.add_node(name, **data)  # type: ignore
     
     # Define edges and build stages
     edges_data = {

@@ -36,6 +36,7 @@ dependencies = [
     "matplotlib>=3.7.0",
     "seaborn>=0.12.0",
     "networkx>=3.0",
+    "sympy>=1.12",
 ]
 
 [project.urls]

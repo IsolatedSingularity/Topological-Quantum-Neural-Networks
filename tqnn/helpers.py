@@ -28,8 +28,8 @@ def create_spin_network_from_pattern(pattern: np.ndarray) -> np.ndarray:
     """
     flat_pattern = pattern.flatten()
     # Scale binary pattern (0 or 1) to a simple spin representation
-    # This simulates the j = N + floor(x_i) mapping from the papers
-    return N_LARGE + flat_pattern * 10
+    # j = N + floor(x_i * 10) mapping from the papers
+    return N_LARGE + np.floor(flat_pattern * 10)
 
 def add_topological_defect(pattern: np.ndarray, noise_level: float) -> np.ndarray:
     """
@@ -127,14 +127,13 @@ class TQNNPerceptron:
         Returns:
             float: The log probability of the input belonging to the prototype's class.
         """
-        # Quantum dimension term: log((j+1)^2) = 2 * log(j+1)
-        # Since input_spins are large, log(j+1) is approx log(j)
-        # This term is nearly constant across prototypes and can be ignored for argmax.
+        # Quantum dimension term: log((2j+1)^2) = 2*log(2j+1)
+        quantum_dim_term = np.sum(np.log(2 * input_spins + 1))
 
         # Gaussian term
         gaussian_term = -np.sum(((input_spins - proto_mean) ** 2) / (2 * proto_std ** 2))
         
-        return gaussian_term
+        return quantum_dim_term + gaussian_term
 
     def predict(self, pattern: np.ndarray) -> tuple[str | None, dict[str, float]]:
         """

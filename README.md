@@ -136,7 +136,7 @@ The codebase is organized around processor classes that implement the TQFT math 
 
 | Class | Module | Role |
 |---|---|---|
-| `TQNNProcessor` | `tqnn.simulation.gui` | Spin-network encoder, 6j-symbol evaluator, TQFT amplitude computation, MPS decomposition |
+| `TQNNProcessor` | `tqnn.processor` | Spin-network encoder, 6j-symbol evaluator (exact via sympy Racah formula), TQFT amplitude computation |
 | `TQNNSimulator` | `tqnn.classifier.gui` | Pattern generation, noise injection, prototype-based classification pipeline |
 | `CobordismProcessor` | `tqnn.cobordism.gui` | TQFT functor evaluation along cylinder, pair-of-pants, and genus-handle cobordisms |
 | `TQNNPerceptron` | `tqnn.helpers` | Lightweight classifier: trains prototypes from labeled patterns, predicts via log-amplitude |

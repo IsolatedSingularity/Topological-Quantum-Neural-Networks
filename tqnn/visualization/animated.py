@@ -26,13 +26,7 @@ seqCmap = sns.color_palette("mako", as_cmap=True)
 divCmap = sns.cubehelix_palette(start=.5, rot=-.5, as_cmap=True)
 altCmap = sns.cubehelix_palette(start=2, rot=0, dark=0, light=.95, reverse=True, as_cmap=True)
 
-# Dark theme constants (matching tensor network simulator)
-DARK_BG = '#1a1a1a'
-DARK_AXES = '#0a0a0a'
-DARK_TEXT = '#ffffff'
-DARK_ACCENT = '#00ff88'
-DARK_GRID = '#2d2d2d'
-DARK_EDGE = '#444444'
+from tqnn.theme import DARK_BG, DARK_AXES, DARK_TEXT, DARK_ACCENT, DARK_GRID, DARK_EDGE
 DARK_SUBTITLE = '#aaaaaa'
 
 # Define the output directory for plots

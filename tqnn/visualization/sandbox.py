@@ -16,13 +16,7 @@ import seaborn as sns
 from matplotlib.animation import FuncAnimation
 from tqnn.helpers import TQNNPerceptron, add_topological_defect
 
-# --- Dark Theme Constants ---
-DARK_BG = '#1a1a1a'
-DARK_AXES = '#0a0a0a'
-DARK_TEXT = '#ffffff'
-DARK_ACCENT = '#00ff88'
-DARK_GRID = '#2d2d2d'
-DARK_EDGE = '#444444'
+from tqnn.theme import DARK_BG, DARK_AXES, DARK_TEXT, DARK_ACCENT, DARK_GRID, DARK_EDGE
 DARK_SUBTITLE = '#aaaaaa'
 
 def create_simple_patterns(size=10):

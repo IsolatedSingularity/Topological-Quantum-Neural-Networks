@@ -54,12 +54,7 @@ divCmap  = sns.cubehelix_palette(start=0.5, rot=-0.5, as_cmap=True)
 altCmap  = sns.cubehelix_palette(start=2, rot=0, dark=0, light=0.95,
                                   reverse=True, as_cmap=True)
 
-DARK_BG      = "#1a1a1a"
-DARK_AXES    = "#0a0a0a"
-DARK_TEXT    = "#ffffff"
-DARK_ACCENT  = "#00ff88"
-DARK_GRID    = "#2d2d2d"
-DARK_EDGE    = "#444444"
+from tqnn.theme import DARK_BG, DARK_AXES, DARK_TEXT, DARK_ACCENT, DARK_GRID, DARK_EDGE
 
 ANIMATION_MS = 100
 N_STEPS      = 60          # steps through the cobordism
@@ -170,7 +165,13 @@ class CobordismProcessor:
         self.output_spins = self._cobordism_transform(self.input_spins, 1.0)
 
     def _cobordism_transform(self, spins: np.ndarray, frac: float) -> np.ndarray:
-        """Transform spins through the cobordism at fractional parameter *frac* ∈ [0, 1]."""
+        """Transform spins through the cobordism at fractional parameter *frac* in [0, 1].
+
+        NOTE: These transforms are heuristic demonstrators, not TQFT state-sum
+        evaluations. The cylinder adds jitter, pair-of-pants averages neighbors,
+        and the genus handle applies a cyclic permutation. They illustrate the
+        qualitative effect of each cobordism topology on spin data.
+        """
         out = spins.copy()
         if self.cobordism_type == "Cylinder":
             # Identity cobordism: small thermal jitter proportional to frac

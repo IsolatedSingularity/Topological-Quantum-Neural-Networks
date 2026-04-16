@@ -129,12 +129,12 @@ class TestTQNNPerceptron:
         _, log_probs = trained_tqnn.predict(patterns[0])
         assert set(log_probs.keys()) == {"Vertical", "Horizontal", "Cross"}
 
-    def test_log_probs_are_negative(self, trained_tqnn, simple_patterns):
-        """Log probabilities (Gaussian exponents) should generally be <= 0."""
+    def test_log_probs_are_finite(self, trained_tqnn, simple_patterns):
+        """Log probabilities should be finite real numbers."""
         patterns, _ = simple_patterns
         _, log_probs = trained_tqnn.predict(patterns[0])
         for lp in log_probs.values():
-            assert lp <= 0.0
+            assert np.isfinite(lp)
 
     def test_noisy_classification_degrades(self, trained_tqnn, simple_patterns):
         """At high noise the correct-class log-prob should be lower than at zero noise."""

@@ -38,7 +38,17 @@ jobs:
         run: ruff check tqnn/ --output-format=github
 
       - name: Type check with mypy
-        run: mypy tqnn/ --ignore-missing-imports
+        run: |
+          set +e
+          mypy tqnn/ --ignore-missing-imports --show-error-codes > /tmp/mypy.txt 2>&1
+          exitcode=$?
+          cat /tmp/mypy.txt
+          if [ $exitcode -ne 0 ]; then
+            grep ": error:" /tmp/mypy.txt | while IFS= read -r line; do
+              echo "::error::mypy: $line"
+            done
+          fi
+          exit $exitcode
 
       - name: Run tests
         run: xvfb-run python -m pytest tests/ -v

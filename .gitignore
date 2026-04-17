@@ -38,3 +38,11 @@ Jenova/
 .github/copilot-instructions.md
 
 AUDIT-*.md
+
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
